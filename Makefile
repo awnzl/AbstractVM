@@ -7,15 +7,14 @@ SRCDIR	= ./src
 INCDIR	= ./inc
 OBJDIR	= ./obj
 
-SRC		= main.cpp AbstractVM.class.cpp Int8.class.cpp #Int8.class.cpp Int16.class.cpp \
-			Int32.class.cpp Float.class.cpp Double.class.cpp
+SRC		= main.cpp AbstractVM.class.cpp OperandsFactory.class.cpp
 
-#ATTR	= 
+ATTR	= -std=c++11
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
 $(NAME) : $(OBJ)
-	$(CC) $(FLG) $(OBJ) -o $(NAME)
+	$(CC) $(FLG) $(OBJ) $(ATTR) -o $(NAME)
 
 all		: obj $(NAME)
 
@@ -23,7 +22,7 @@ obj		:
 	@mkdir -p $(OBJDIR)
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp
-	$(CC) $(FLG) -I $(INCDIR) -o $@ -c $<
+	$(CC) $(FLG) $(ATTR) -I $(INCDIR) -o $@ -c $<
 
 clean	:
 	rm -f $(OBJ)

@@ -4,6 +4,7 @@
 # include <vector>
 # include <cstdlib>
 # include "IOperand.hpp"
+# include "Operand.hpp"
 # include "eOperandType.hpp"
 # include "Int8.hpp"
 # include "Int16.hpp"

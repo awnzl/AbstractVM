@@ -6,7 +6,7 @@
 
 class Int32 : public Operand<int> {
 public:
-    Int32(int c) : Operand<int>(eOperandType::INT32, c) {}
+    Int32(int v) : Operand<int>(eOperandType::INT32, v) {}
     
     virtual ~Int32(void) {}
 };

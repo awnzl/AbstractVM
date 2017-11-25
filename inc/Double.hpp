@@ -6,7 +6,7 @@
 
 class Double : public Operand<double> {
 public:
-    Double(double c) : Operand<double>(eOperandType::DOUBLE, c) {}
+    Double(double v) : Operand<double>(eOperandType::DOUBLE, v) {}
     
     virtual ~Double(void) {}
 };

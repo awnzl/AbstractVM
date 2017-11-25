@@ -6,7 +6,7 @@
 
 class Float : public Operand<float> {
 public:
-    Float(float c) : Operand<float>(eOperandType::FLOAT, c) {}
+    Float(float v) : Operand<float>(eOperandType::FLOAT, v) {}
     
     virtual ~Float(void) {}
 };

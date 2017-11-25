@@ -6,7 +6,7 @@
 
 class Int16 : public Operand<short> {
 public:
-    Int16(short c) : Operand<short>(eOperandType::INT16, c) {}
+    Int16(short v) : Operand<short>(eOperandType::INT16, v) {}
     
     virtual ~Int16(void) {}
 };

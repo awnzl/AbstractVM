@@ -6,7 +6,7 @@
 
 class Int8 : public Operand<char> {
 public:
-    Int8(char c) : Operand<char>(eOperandType::INT8, c) {}
+    Int8(char v) : Operand<char>(eOperandType::INT8, v) {}
     
     virtual ~Int8(void) {}
 };

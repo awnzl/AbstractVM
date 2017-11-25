@@ -1,18 +1,12 @@
-// #include "OperandsFactory.hpp"
-// #include "eOperandType.hpp"
-#include "../inc/OperandsFactory.hpp"
-#include "../inc/eOperandType.hpp"
+#include "OperandsFactory.hpp"
+#include "eOperandType.hpp"
 
-//TODO поменять инклюды
-
-
-//todo проверить, чтобы Инт8 был на нулевой позиции
 OperandsFactory::OperandsFactory() {
-    creators.push_back(createInt8);
-    creators.push_back(createInt16);
-    creators.push_back(createInt32);
-    creators.push_back(createFloat);
-    creators.push_back(createDouble);
+    creators.push_back(&OperandsFactory::createInt8);
+    creators.push_back(&OperandsFactory::createInt16);
+    creators.push_back(&OperandsFactory::createInt32);
+    creators.push_back(&OperandsFactory::createFloat);
+    creators.push_back(&OperandsFactory::createDouble);
 }
 
 OperandsFactory::~OperandsFactory() {

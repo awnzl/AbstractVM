@@ -2,11 +2,12 @@
 # define __OPERAND_HPP
 
 # include <stdexcept>
+# include <sstream>
+# include <cmath>
 # include "IOperand.hpp"
 # include "eOperandType.hpp"
 
-template<typename T>
-class Operand : public IOperand {
+template<typename T> class Operand : public IOperand {
     T value;
     eOperandType type;
     Operand() {}
@@ -20,7 +21,7 @@ public:
         this->type = op.type;
     }
 
-    Operand &operator=(Operand &) {
+    Operand &operator=(Operand &op) {
         this->value = op.value;
         this->type = op.type;
     }
@@ -34,74 +35,73 @@ public:
     }
 
     IOperand const *operator+(IOperand const &rhs) const { // Sum
-        if (this->getPrecision() == rhs.getPrecision())
-            return (new Operand(this->type, this->value + rhs.value);
-        else if (this->getPrecision() < rhs.getPrecision()) {
-            Operand tmp(rhs.type, this->value);
+        if (this->getPrecision() < rhs.getPrecision()) {
+            Operand tmp(rhs.getType(), this->value);
             return (tmp + rhs);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            Operand tmp(this->type, rhs.value);
+            Operand tmp(this->type, static_cast<Operand<T> const &>(rhs).value);
             return (tmp + rhs);
-        }
+        } else
+            return (new Operand(this->type, this->value + static_cast<Operand<T> const &>(rhs).value));
     }
     
     IOperand const *operator-(IOperand const &rhs) const { // Difference
-        if (this->getPrecision() == rhs.getPrecision())
-            return (new Operand(this->type, this->value - rhs.value);
-        else if (this->getPrecision() < rhs.getPrecision()) {
-            Operand tmp(rhs.type, this->value);
+        if (this->getPrecision() < rhs.getPrecision()) {
+            Operand tmp(rhs.getType(), this->value);
             return (tmp - rhs);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            Operand tmp(this->type, rhs.value);
+            Operand tmp(this->type, static_cast<Operand<T> const &>(rhs).value);
             return (tmp - rhs);
-        }
+        } else
+            return (new Operand(this->type, this->value - static_cast<Operand<T> const &>(rhs).value));
     }
 
 
     IOperand const *operator*(IOperand const &rhs) const { // Product
-        if (this->getPrecision() == rhs.getPrecision())
-            return (new Operand(this->type, this->value * rhs.value);
-        else if (this->getPrecision() < rhs.getPrecision()) {
-            Operand tmp(rhs.type, this->value);
+        if (this->getPrecision() < rhs.getPrecision()) {
+            Operand tmp(rhs.getType(), this->value);
             return (tmp * rhs);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            Operand tmp(this->type, rhs.value);
+            Operand tmp(this->type, static_cast<Operand<T> const &>(rhs).value);
             return (tmp * rhs);
-        }
+        } else
+            return (new Operand(this->type, this->value * static_cast<Operand<T> const &>(rhs).value));
     }
 
     IOperand const *operator/(IOperand const &rhs) const { // Quotient
-        if (rhs.value == 0)
-            throw (runtime_error("division by zero"));
+        if (static_cast<Operand<T> const &>(rhs).value == 0)
+            throw (std::runtime_error("division by zero"));
         
-        if (this->getPrecision() == rhs.getPrecision())
-            return (new Operand(this->type, this->value / rhs.value);
-        else if (this->getPrecision() < rhs.getPrecision()) {
-            Operand tmp(rhs.type, this->value);
+        if (this->getPrecision() < rhs.getPrecision()) {
+            Operand tmp(rhs.getType(), this->value);
             return (tmp / rhs);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            Operand tmp(this->type, rhs.value);
+            Operand tmp(this->type, static_cast<Operand<T> const &>(rhs).value);
             return (tmp / rhs);
-        }
+        } else
+            return (new Operand(this->type, this->value / static_cast<Operand<T> const &>(rhs).value));
     }
 
     IOperand const *operator%(IOperand const &rhs) const { // Modulo
-        if (rhs.value == 0)
-            throw (runtime_error("modulo by zero"));
+        if (static_cast<Operand<T> const &>(rhs).value == 0)
+            throw (std::runtime_error("modulo by zero"));
 
-        if (this->getPrecision() == rhs.getPrecision())
-            return (new Operand(this->type, this->value % rhs.value);
-        else if (this->getPrecision() < rhs.getPrecision()) {
-            Operand tmp(rhs.type, this->value);
+        if (this->getPrecision() < rhs.getPrecision()) {
+            Operand tmp(rhs.getType(), this->value);
             return (tmp % rhs);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            Operand tmp(this->type, rhs.value);
+            Operand tmp(this->type, static_cast<Operand<T> const &>(rhs).value);
             return (tmp % rhs);
-        }
+        } else
+            return (new Operand(this->type, std::fmod(this->value, static_cast<Operand<T> const &>(rhs).value)));
     }
 
-    std::string const &toString(void) const; // String representation of the instance
-    //todo implement toString function
+    std::string const &toString(void) const { // String representation of the instance
+        //todo get more relevant string
+        std::stringstream ss;
+        ss << this->value;
+        return (ss.str());
+    }
 
     virtual ~Operand() {}
 };
