@@ -8,6 +8,8 @@
 # include "Int8.hpp"
 # include "Int16.hpp"
 # include "Int32.hpp"
+# include "Float.hpp"
+# include "Double.hpp"
 
 class OperandsFactory {
     std::vector<const IOperand *(OperandsFactory::*)(const std::string &) const> creators;

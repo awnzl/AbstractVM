@@ -40,11 +40,11 @@ const IOperand *OperandsFactory::createInt32(std::string const &value) const {
 }
 
 const IOperand *OperandsFactory::createFloat(std::string const &value) const {
-    //return (new Int32(std::atoi(value.c_str())));
+    return (new Float(std::atof(value.c_str())));
 }
 
 const IOperand *OperandsFactory::createDouble(std::string const &value) const {
-    //return (new Int32(std::atoi(value.c_str())));
+    return (new Double(std::atof(value.c_str())));
 }
 
 const IOperand *OperandsFactory::createOperand(eOperandType type, std::string const &value) const {
