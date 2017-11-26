@@ -1,5 +1,4 @@
-// #include "AVMLexer.hpp"
-#include "../inc/AVMLexer.hpp"
+#include "AVMLexer.hpp"
 
 AVMLexer::AVMLexer () {
     ptrnINSRT = std::string("push ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
