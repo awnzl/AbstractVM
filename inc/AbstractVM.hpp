@@ -7,7 +7,7 @@
 //another container that behaves like a stack is up to you. Whatever the container, it MUST
 //only contain pointers to the abstract type IOperand.
 
-//todo унаследоваться от стека, прикрутить итератор
+//todo унаследоваться от стека, прикрутить итератор?
 
 class AbstractVM {
     enum Work {RUN, STOP} work;

@@ -10,10 +10,16 @@
 template<typename T> class Operand : public IOperand {
     T value;
     eOperandType type;
+    std::string instanceString;
+
     Operand() {}
 
 public:
     Operand(eOperandType type, T val) : value(val), type(type) {
+        std::stringstream ss;
+        ss << type << " " << value << std::endl;
+        instanceString = ss.str();
+        //todo change this to more relevant string?
     }
 
     Operand(const Operand &op) {
@@ -34,7 +40,7 @@ public:
         return (this->type);
     }
 
-    IOperand const *operator+(IOperand const &rhs) const { // Sum
+    const IOperand *operator+(const IOperand &rhs) const { // Sum
         if (this->getPrecision() < rhs.getPrecision()) {
             Operand tmp(rhs.getType(), this->value);
             return (tmp + rhs);
@@ -45,7 +51,7 @@ public:
             return (new Operand(this->type, this->value + static_cast<Operand<T> const &>(rhs).value));
     }
     
-    IOperand const *operator-(IOperand const &rhs) const { // Difference
+    const IOperand *operator-(const IOperand &rhs) const { // Difference
         if (this->getPrecision() < rhs.getPrecision()) {
             Operand tmp(rhs.getType(), this->value);
             return (tmp - rhs);
@@ -57,7 +63,7 @@ public:
     }
 
 
-    IOperand const *operator*(IOperand const &rhs) const { // Product
+    const IOperand *operator*(const IOperand &rhs) const { // Product
         if (this->getPrecision() < rhs.getPrecision()) {
             Operand tmp(rhs.getType(), this->value);
             return (tmp * rhs);
@@ -68,7 +74,7 @@ public:
             return (new Operand(this->type, this->value * static_cast<Operand<T> const &>(rhs).value));
     }
 
-    IOperand const *operator/(IOperand const &rhs) const { // Quotient
+    const IOperand *operator/(const IOperand &rhs) const { // Quotient
         if (static_cast<Operand<T> const &>(rhs).value == 0)
             throw (std::runtime_error("division by zero"));
         
@@ -82,7 +88,7 @@ public:
             return (new Operand(this->type, this->value / static_cast<Operand<T> const &>(rhs).value));
     }
 
-    IOperand const *operator%(IOperand const &rhs) const { // Modulo
+    const IOperand *operator%(const IOperand &rhs) const { // Modulo
         if (static_cast<Operand<T> const &>(rhs).value == 0)
             throw (std::runtime_error("modulo by zero"));
 
@@ -96,11 +102,8 @@ public:
             return (new Operand(this->type, std::fmod(this->value, static_cast<Operand<T> const &>(rhs).value)));
     }
 
-    std::string const &toString(void) const { // String representation of the instance
-        //todo get more relevant string
-        std::stringstream ss;
-        ss << this->value;
-        return (ss.str());
+    const std::string &toString(void) const { // String representation of the instance
+        return (this->instanceString);
     }
 
     virtual ~Operand() {}

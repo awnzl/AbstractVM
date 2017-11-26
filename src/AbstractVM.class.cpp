@@ -17,6 +17,14 @@ AbstractVM &AbstractVM::operator=(AbstractVM &avm) {
 
 //запиливаем здесь считываетль из консоли и файла, а там будет видно
 void AbstractVM::run() {
+    //получает отвалидированные данные и начинает свое дело...
+    //нужно обрабатывать эксепшены, чтобы выполнение программы не прерывалось на этом,
+    //как в калькуляторе dc
+    /*
+    AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
+    another container that behaves like a stack is up to you. Whatever the container, it MUST
+    only contain pointers to the abstract type IOperand.
+    */
     while (work == RUN) {
         
         if (true)
