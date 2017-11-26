@@ -2,6 +2,9 @@
 # define __ABSTRACTVM_HPP
 
 # include <iostream>
+# include <string>
+# include "AVMLexer.hpp"
+# include "AVMToken.hpp"
 
 //AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
 //another container that behaves like a stack is up to you. Whatever the container, it MUST
@@ -18,7 +21,7 @@ public:
     AbstractVM &operator=(AbstractVM &avm);
 
     //запиливаем здесь считываетль из консоли и файла, а там будет видно
-    void run();
+    void run(char *);
 };
 
 

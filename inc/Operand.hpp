@@ -62,7 +62,6 @@ public:
             return (new Operand(this->type, this->value - static_cast<Operand<T> const &>(rhs).value));
     }
 
-
     const IOperand *operator*(const IOperand &rhs) const { // Product
         if (this->getPrecision() < rhs.getPrecision()) {
             Operand tmp(rhs.getType(), this->value);

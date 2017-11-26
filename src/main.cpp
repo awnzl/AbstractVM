@@ -3,9 +3,10 @@
 int main(int ac, char **av) {
     AbstractVM avm;
 
-    //читает либо из 1 файла либо из консоли.
-    //нужна валидция для содержимого файла (по регексу?)
-    avm.run();
+    if (ac < 2)
+        avm.run(av[1]);
+    else
+        std::cout << "usage: ./avm [arg]" << std::endl;
 
     return (0);
 }
