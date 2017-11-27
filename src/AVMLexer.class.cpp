@@ -1,4 +1,4 @@
-#include "../inc/AVMLexer.hpp"
+#include "AVMLexer.hpp"
 
 AVMLexer::AVMLexer () {
     ptrnINSRT = std::string("push ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
@@ -23,7 +23,7 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
     if (std::regex_match(s, ptrnINSRT))
         res = parseIt(s);
     else if (std::regex_match(s, ptrnENDC))
-        return (res);
+        return (res);//todo comment, do with it something
     else
         throw (std::runtime_error("avm: invalid instruction"));
 

@@ -2,9 +2,12 @@
 # define __ABSTRACTVM_HPP
 
 # include <iostream>
+# include <fstream>
 # include <string>
+# include "OperandsFactory.hpp"
 # include "AVMLexer.hpp"
 # include "AVMToken.hpp"
+# include "AVMStack.hpp"
 
 //AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
 //another container that behaves like a stack is up to you. Whatever the container, it MUST
@@ -14,7 +17,12 @@
 
 class AbstractVM {
     enum Work {RUN, STOP} work;
+    AVMStack<const IOperand*> avmStack;
+    OperandsFactory factory;
+
+    void push(std::string &operand, std::string &value);
 public:
+
     AbstractVM();
     ~AbstractVM();
     AbstractVM(const AbstractVM &avm);
@@ -22,6 +30,7 @@ public:
 
     //запиливаем здесь считываетль из консоли и файла, а там будет видно
     void run(char *);
+
 };
 
 

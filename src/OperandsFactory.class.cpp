@@ -21,6 +21,11 @@ OperandsFactory &OperandsFactory::operator=(OperandsFactory &oc) {
     return (*this);
 }
 
+const OperandsFactory &OperandsFactory::operator=(const OperandsFactory &oc) {
+    this->creators = oc.creators;
+    return (*this);
+}
+
 const IOperand *OperandsFactory::createInt8(std::string const &value) const {
     return (new Int8(std::atoi(value.c_str())));
 }

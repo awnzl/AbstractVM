@@ -26,6 +26,7 @@ public:
     ~OperandsFactory();
     OperandsFactory(const OperandsFactory &);
     OperandsFactory &operator=(OperandsFactory &);
+    const OperandsFactory &operator=(const OperandsFactory &);
 
     const IOperand *createOperand(eOperandType type, std::string const &value) const;
 };
