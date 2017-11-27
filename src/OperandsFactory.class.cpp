@@ -2,27 +2,27 @@
 #include "eOperandType.hpp"
 
 OperandsFactory::OperandsFactory() {
-    creators.push_back(&OperandsFactory::createInt8);
-    creators.push_back(&OperandsFactory::createInt16);
-    creators.push_back(&OperandsFactory::createInt32);
-    creators.push_back(&OperandsFactory::createFloat);
-    creators.push_back(&OperandsFactory::createDouble);
+    _creators.push_back(&OperandsFactory::createInt8);
+    _creators.push_back(&OperandsFactory::createInt16);
+    _creators.push_back(&OperandsFactory::createInt32);
+    _creators.push_back(&OperandsFactory::createFloat);
+    _creators.push_back(&OperandsFactory::createDouble);
 }
 
 OperandsFactory::~OperandsFactory() {
 }
 
 OperandsFactory::OperandsFactory(const OperandsFactory &oc) {
-    this->creators = oc.creators;
+    this->_creators = oc._creators;
 }
 
 OperandsFactory &OperandsFactory::operator=(OperandsFactory &oc) {
-    this->creators = oc.creators;
+    this->_creators = oc._creators;
     return (*this);
 }
 
 const OperandsFactory &OperandsFactory::operator=(const OperandsFactory &oc) {
-    this->creators = oc.creators;
+    this->_creators = oc._creators;
     return (*this);
 }
 
@@ -47,5 +47,5 @@ const IOperand *OperandsFactory::createDouble(std::string const &value) const {
 }
 
 const IOperand *OperandsFactory::createOperand(eOperandType type, std::string const &value) const {
-    return (this->*(creators.at(type)))(value);
+    return (this->*(_creators.at(type)))(value);
 }

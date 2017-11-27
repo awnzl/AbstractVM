@@ -25,7 +25,7 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
     else if (std::regex_match(s, _ptrnENDC))
         return (res);//todo comment, do with it something
     else
-        throw (std::runtime_error("avm: invalid instruction"));
+        throw (std::runtime_error("avm: An instruction is unknown"));
 
     return (res);
 }

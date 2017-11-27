@@ -1,22 +1,22 @@
 #include "AbstractVM.hpp"
 
-AbstractVM::AbstractVM() : work(RUN) {}
+AbstractVM::AbstractVM() : _work(RUN) {}
 
 AbstractVM::~AbstractVM() {
     //todo free pointers in stack
 }
 
 AbstractVM::AbstractVM(const AbstractVM &avm) {
-    this->work = avm.work;
-    this->avmStack = avm.avmStack;
-    this->factory = avm.factory;
+    this->_work = avm._work;
+    this->_avmStack = avm._avmStack;
+    this->_factory = avm._factory;
     //...
 }
 
 AbstractVM &AbstractVM::operator=(AbstractVM &avm) {
-    this->work = avm.work;
-    this->avmStack = avm.avmStack;
-    this->factory = avm.factory;
+    this->_work = avm._work;
+    this->_avmStack = avm._avmStack;
+    this->_factory = avm._factory;
     //...
     return (*this);
 }
@@ -25,20 +25,20 @@ void AbstractVM::push(std::string &operand, std::string &value) {
     const IOperand *op = NULL;
 
     if (operand == "int8")
-        op = factory.createOperand(eOperandType::INT8, value);
+        op = _factory.createOperand(eOperandType::INT8, value);
     else if (operand == "int16")
-        op = factory.createOperand(eOperandType::INT16, value);
+        op = _factory.createOperand(eOperandType::INT16, value);
     else if (operand == "int32")
-        op = factory.createOperand(eOperandType::INT32, value);
+        op = _factory.createOperand(eOperandType::INT32, value);
     else if (operand == "float")
-        op = factory.createOperand(eOperandType::FLOAT, value);
+        op = _factory.createOperand(eOperandType::FLOAT, value);
     else if (operand == "double")
-        op = factory.createOperand(eOperandType::DOUBLE, value);
+        op = _factory.createOperand(eOperandType::DOUBLE, value);
     else
         throw std::runtime_error("avm: some truble in push func - wrong operand string value?");
 
     if (op)
-        avmStack.push(op);
+        _avmStack.push(op);
     else
         throw std::runtime_error("avm: some truble in push func - op is NULL?");
 }
@@ -56,7 +56,7 @@ void AbstractVM::run(char *in = NULL) {
     //лексер разбирает на токены, а токены парсятся парсером
     //т.е. по регекспу разобрать на токены? А токены уже парсонуть? 
 
-    while (work == RUN) {
+    while (_work == RUN) {
         
         if (in) {//name of the arg file, c-string
             //open the file
@@ -69,13 +69,14 @@ void AbstractVM::run(char *in = NULL) {
                 AVMToken *tok;
                 std::ifstream ifs(in, std::ios_base::in);
                 std::string buff;
-                while(std::getline(ifs, buff)) {
+                while(std::getline(ifs, buff)) { 
                     tok = NULL;
-                    tok = AVMLexer::getLexer().lexIt(buff);
-                    if (tok && tok->type == AVMToken::TokenType::PUSH) {
-                        push(tok->operand, tok->value);
-                    } else if (tok && tok->type == AVMToken::TokenType::ASSERT) {
-                        //
+                    if ((tok = AVMLexer::getLexer().lexIt(buff))) {
+                        if (tok->type == AVMToken::TokenType::PUSH) {
+                            push(tok->operand, tok->value);
+                        } else if (tok->type == AVMToken::TokenType::ASSERT) {
+                            //
+                        }
                     }
                 }
 
@@ -85,12 +86,14 @@ void AbstractVM::run(char *in = NULL) {
                 std::cout << ex.what() << std::endl;
             }
 
-            AVMStack<const IOperand*>::iterator st = avmStack.begin();
-            AVMStack<const IOperand*>::iterator en = avmStack.end();
-
+        //*****************************************************************************//
+            AVMStack<const IOperand*>::iterator st = _avmStack.begin();
+            AVMStack<const IOperand*>::iterator en = _avmStack.end();
+            
             while (st != en) {
                 std::cout << "--> " << (*st++)->toString() << std::endl;
             }
+        //*****************************************************************************//
             
         } else {
             //читаем из стандартного ввода, отдаем лексеру, парсим валидный результат
@@ -99,6 +102,6 @@ void AbstractVM::run(char *in = NULL) {
 
         if (true)
             std::cout << "All works\n";
-            work = STOP;
+            _work = STOP;
     }
 }

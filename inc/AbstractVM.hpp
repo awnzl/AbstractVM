@@ -16,9 +16,9 @@
 //todo унаследоваться от стека, прикрутить итератор?
 
 class AbstractVM {
-    enum Work {RUN, STOP} work;
-    AVMStack<const IOperand*> avmStack;
-    OperandsFactory factory;
+    enum Work {RUN, STOP} _work;
+    AVMStack<const IOperand*> _avmStack;
+    OperandsFactory _factory;
 
     void push(std::string &operand, std::string &value);
 public:

@@ -13,7 +13,7 @@
 # include "Double.hpp"
 
 class OperandsFactory {
-    std::vector<const IOperand *(OperandsFactory::*)(const std::string &) const> creators;
+    std::vector<const IOperand *(OperandsFactory::*)(const std::string &) const> _creators;
 
     const IOperand *createInt8(const std::string &value) const;
     const IOperand *createInt16(const std::string &value) const;

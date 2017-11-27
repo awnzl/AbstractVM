@@ -4,9 +4,9 @@
 # include "Operand.hpp"
 # include "eOperandType.hpp"
 
-class Int8 : public Operand<char> {
+class Int8 : public Operand<int8_t> {
 public:
-    Int8(char v) : Operand<char>(eOperandType::INT8, v) {}
+    Int8(int8_t v) : Operand<int8_t>(eOperandType::INT8, v) {}
     
     virtual ~Int8(void) {}
 };
