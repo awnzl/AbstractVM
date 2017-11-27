@@ -57,7 +57,6 @@ void AbstractVM::run(char *in = NULL) {
     //т.е. по регекспу разобрать на токены? А токены уже парсонуть? 
 
     while (work == RUN) {
-        AVMLexer lexer = AVMLexer::getLexer();
         
         if (in) {//name of the arg file, c-string
             //open the file
@@ -72,7 +71,7 @@ void AbstractVM::run(char *in = NULL) {
                 std::string buff;
                 while(std::getline(ifs, buff)) {
                     tok = NULL;
-                    tok = lexer.lexIt(buff);
+                    tok = AVMLexer::getLexer().lexIt(buff);
                     if (tok && tok->type == AVMToken::TokenType::PUSH) {
                         push(tok->operand, tok->value);
                     } else if (tok && tok->type == AVMToken::TokenType::ASSERT) {

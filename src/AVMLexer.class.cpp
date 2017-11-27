@@ -1,12 +1,12 @@
 #include "AVMLexer.hpp"
 
 AVMLexer::AVMLexer () {
-    ptrnINSRT = std::string("push ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
+    _ptrnINSRT = std::string("push ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
                             "(float\\([-]?\\d+\\.\\d+\\))|(double\\([-]?\\d+\\.\\d+\\)))|pop|dump|"\
                             "assert ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
                             "(float\\([-]?\\d+\\.\\d+\\))|(double\\([-]?\\d+\\.\\d+\\)))|add|sub|mul|"\
                             "div|mod|print|exit|(\n+)");
-    ptrnENDC = std::string(";.+|;;");
+    _ptrnENDC = std::string(";.+|;;");
 }
 
 AVMLexer &AVMLexer::getLexer() {
@@ -20,9 +20,9 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
     //todo допилить обработку комментариев и конца ввода из консоли
     //в частности, нужен ввод комментов после каждой из строк, также в начале строки
     //
-    if (std::regex_match(s, ptrnINSRT))
+    if (std::regex_match(s, _ptrnINSRT))
         res = parseIt(s);
-    else if (std::regex_match(s, ptrnENDC))
+    else if (std::regex_match(s, _ptrnENDC))
         return (res);//todo comment, do with it something
     else
         throw (std::runtime_error("avm: invalid instruction"));

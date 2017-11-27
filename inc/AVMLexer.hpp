@@ -7,13 +7,15 @@
 # include "AVMToken.hpp"
 
 class AVMLexer {
-    std::regex ptrnINSRT;
-    std::regex ptrnENDC;
-
+    std::regex _ptrnINSRT;
+    std::regex _ptrnENDC;
+    
     AVMLexer ();
-    AVMLexer &operator=(AVMLexer &);
     AVMToken *parseIt(std::string &s);
+
 public:
+    AVMLexer(const AVMLexer &) = delete;
+    AVMLexer &operator=(AVMLexer &) = delete;
     static AVMLexer &getLexer();
     AVMToken *lexIt(std::string &s);
 };
