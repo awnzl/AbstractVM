@@ -30,21 +30,22 @@ void AbstractVM::run(char *in = NULL) {
     //т.е. по регекспу разобрать на токены? А токены уже парсонуть? 
 
     while (work == RUN) {
+        AVMLexer lexer = AVMLexer::getLexer();
         
         if (in) {//name of the arg file, c-string
-            //read from file
-            //lexer from here
-            /*
-                лексер будет работать построчно, принял объект, чекнул, вернул
-                токен.
-                Токен - что в нем будет? 
-                тип токена, где в соответствии с типом будет или не будет:
-                    операция,
-                    тип операнда
-                    значение операнда
-            */
+            //open the file
+            //read the string
+            //lex and parse it
+            //check result
+            //do what result is need
+
+            
+
+            // AVMToken *operation = lexer.lexIt(s);
+
+            
         } else {
-            //read from std input by lexer?
+            //читаем из стандартного ввода, отдаем лексеру, парсим валидный результат
         }
 
 
