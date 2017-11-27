@@ -4,22 +4,24 @@
 # include <stdexcept>
 # include <sstream>
 # include <cmath>
+# include <iostream>//todo debug
+# include <typeinfo>//todo debug
 # include "IOperand.hpp"
 # include "eOperandType.hpp"
 
 template<typename T> class Operand : public IOperand {
-    T _value;
     eOperandType _type;
+    T _value;
     std::string _instanceString;
 
-    Operand() {}
-
 public:
-    Operand(eOperandType type, T val) : _value(val), _type(type) {
+    Operand() = delete;
+
+    Operand<T>(eOperandType type, T val) : _type(type), _value(val) {
+        std::string arr[] = {"Int8", "Int16", "Int32", "Float", "Double"};
         std::stringstream ss;
-        ss << _type << " " << _value << std::endl;
+        ss << arr[_type] << " " << _value;
         _instanceString = ss.str();
-        //todo change this to more relevant string?
     }
 
     Operand(const Operand &op) {
@@ -45,8 +47,8 @@ public:
             Operand tmp(rhs.getType(), this->_value);
             return (tmp + rhs);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            Operand tmp(this->_type, static_cast<Operand<T> const &>(rhs)._value);
-            return (tmp + rhs);
+            Operand tmp(this->_type, static_cast<Operand<T> const &>(rhs)._value);//откуда оно здесь, какой тип юзать для шаблона?
+            return (tmp + rhs);//бесконечная рекурсия для типов от меншего к большему? 
         } else
             return (new Operand(this->_type, this->_value + static_cast<Operand<T> const &>(rhs)._value));
     }

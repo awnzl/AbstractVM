@@ -20,7 +20,17 @@ class AbstractVM {
     AVMStack<const IOperand*> _avmStack;
     OperandsFactory _factory;
 
+    const IOperand *produceOperand(std::string &operand, std::string &value);
+
     void push(std::string &operand, std::string &value);
+    void pop();
+    void dump();
+    bool assert(std::string &operand, std::string &value);
+    void add();
+    void sub();
+    void mul();
+    void div();
+    void mod();
 public:
 
     AbstractVM();

@@ -6,6 +6,7 @@
 
 class Int8 : public Operand<int8_t> {
 public:
+    Int8() = delete;
     Int8(int8_t v) : Operand<int8_t>(eOperandType::INT8, v) {}
     
     virtual ~Int8(void) {}

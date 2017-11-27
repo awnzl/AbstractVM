@@ -6,6 +6,7 @@
 
 class Int16 : public Operand<int16_t> {
 public:
+    Int16() = delete;
     Int16(int16_t v) : Operand<int16_t>(eOperandType::INT16, v) {}
     
     virtual ~Int16(void) {}

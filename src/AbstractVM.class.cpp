@@ -1,5 +1,8 @@
 #include "AbstractVM.hpp"
 
+//todo debug
+#include <typeinfo>
+
 AbstractVM::AbstractVM() : _work(RUN) {}
 
 AbstractVM::~AbstractVM() {
@@ -21,7 +24,7 @@ AbstractVM &AbstractVM::operator=(AbstractVM &avm) {
     return (*this);
 }
 
-void AbstractVM::push(std::string &operand, std::string &value) {
+const IOperand *AbstractVM::produceOperand(std::string &operand, std::string &value) {
     const IOperand *op = NULL;
 
     if (operand == "int8")
@@ -35,12 +38,64 @@ void AbstractVM::push(std::string &operand, std::string &value) {
     else if (operand == "double")
         op = _factory.createOperand(eOperandType::DOUBLE, value);
     else
-        throw std::runtime_error("avm: some truble in push func - wrong operand string value?");
+        throw std::runtime_error("avm: some truble in push or assert func - wrong operand string value?");
 
-    if (op)
-        _avmStack.push(op);
+    return (op);
+}
+
+void AbstractVM::push(std::string &operand, std::string &value) {
+    _avmStack.push(produceOperand(operand, value));
+}
+
+void AbstractVM::pop() {
+    if (_avmStack.size() > 0)
+        return (_avmStack.pop());
     else
-        throw std::runtime_error("avm: some truble in push func - op is NULL?");
+        throw std::runtime_error("avm: Instruction pop on an empty stack");
+}
+
+void AbstractVM::dump() {
+    AVMStack<const IOperand*>::iterator st = _avmStack.begin();
+    AVMStack<const IOperand*>::iterator en = _avmStack.end();
+
+    while (st != en)
+        std::cout << (*st++)->toString() << std::endl;
+}
+
+bool AbstractVM::assert(std::string &operand, std::string &value) {
+    const IOperand *op = produceOperand(operand, value);
+    const IOperand *top = *(_avmStack.begin());
+
+    if (op->getType() == top->getType() && op->toString() == top->toString()) {
+        delete (op);
+        return (true);
+    } else {
+        delete (op);
+        throw std::runtime_error("avm: An assert instruction is not true");
+    }
+    return (false);
+}
+
+void AbstractVM::add() {
+    /*
+    Unstacks the first two values on the stack, adds them together and stacks the
+    result. If the number of values on the stack is strictly inferior to 2, the program
+    execution must stop with an error.
+    */
+    if (_avmStack.size() < 2)
+        throw std::runtime_error("The stack is composed of strictly less that two values "\
+                            "when an arithmetic instruction is executed");
+
+    const IOperand *first = *(_avmStack.begin());
+    const IOperand *second = *(_avmStack.begin() + 1);
+    _avmStack.pop();
+    _avmStack.pop();
+
+    const IOperand *res = (*first) + (*second);
+    _avmStack.push(res);
+
+    delete (first);
+    delete (second);
 }
 
 void AbstractVM::run(char *in = NULL) {
@@ -85,16 +140,23 @@ void AbstractVM::run(char *in = NULL) {
                 //todo обработать исключения
                 std::cout << ex.what() << std::endl;
             }
+/*          WARNING!!!         */
+/*где-то не срабатывает присвоение типов или что-то такое
+и в итоге в операнде на самом деле хз что происходит - кругом тип
+s на возврате от typeid(_value).name()*/
+/*                             */
+        dump();
+        add();
+        std::cout << "\n";
+        dump();
+        add();
+        std::cout << "\n";
+        dump();
+        add();
+        std::cout << "\n";
+        dump();
 
-        //*****************************************************************************//
-            AVMStack<const IOperand*>::iterator st = _avmStack.begin();
-            AVMStack<const IOperand*>::iterator en = _avmStack.end();
-            
-            while (st != en) {
-                std::cout << "--> " << (*st++)->toString() << std::endl;
-            }
-        //*****************************************************************************//
-            
+       
         } else {
             //читаем из стандартного ввода, отдаем лексеру, парсим валидный результат
         }
