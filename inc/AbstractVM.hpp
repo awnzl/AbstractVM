@@ -18,7 +18,6 @@
 class AbstractVM {
     enum Work {RUN, STOP} _work;
     AVMStack<const IOperand*> _avmStack;
-    OperandsFactory _factory;
 
     const IOperand *produceOperand(std::string &operand, std::string &value);
 

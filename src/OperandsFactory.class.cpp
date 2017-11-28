@@ -1,5 +1,10 @@
 #include "OperandsFactory.hpp"
 #include "eOperandType.hpp"
+#include "Int8.hpp"
+#include "Int16.hpp"
+#include "Int32.hpp"
+#include "Float.hpp"
+#include "Double.hpp"
 
 OperandsFactory::OperandsFactory() {
     _creators.push_back(&OperandsFactory::createInt8);
@@ -12,18 +17,9 @@ OperandsFactory::OperandsFactory() {
 OperandsFactory::~OperandsFactory() {
 }
 
-OperandsFactory::OperandsFactory(const OperandsFactory &oc) {
-    this->_creators = oc._creators;
-}
-
-OperandsFactory &OperandsFactory::operator=(OperandsFactory &oc) {
-    this->_creators = oc._creators;
-    return (*this);
-}
-
-const OperandsFactory &OperandsFactory::operator=(const OperandsFactory &oc) {
-    this->_creators = oc._creators;
-    return (*this);
+OperandsFactory &OperandsFactory::getFactory() {
+    static OperandsFactory factory;
+    return (factory);
 }
 
 const IOperand *OperandsFactory::createInt8(std::string const &value) const {

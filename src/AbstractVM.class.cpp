@@ -12,14 +12,12 @@ AbstractVM::~AbstractVM() {
 AbstractVM::AbstractVM(const AbstractVM &avm) {
     this->_work = avm._work;
     this->_avmStack = avm._avmStack;
-    this->_factory = avm._factory;
     //...
 }
 
 AbstractVM &AbstractVM::operator=(AbstractVM &avm) {
     this->_work = avm._work;
     this->_avmStack = avm._avmStack;
-    this->_factory = avm._factory;
     //...
     return (*this);
 }
@@ -28,15 +26,15 @@ const IOperand *AbstractVM::produceOperand(std::string &operand, std::string &va
     const IOperand *op = NULL;
 
     if (operand == "int8")
-        op = _factory.createOperand(eOperandType::INT8, value);
+        op = OperandsFactory::getFactory().createOperand(eOperandType::INT8, value);
     else if (operand == "int16")
-        op = _factory.createOperand(eOperandType::INT16, value);
+        op = OperandsFactory::getFactory().createOperand(eOperandType::INT16, value);
     else if (operand == "int32")
-        op = _factory.createOperand(eOperandType::INT32, value);
+        op = OperandsFactory::getFactory().createOperand(eOperandType::INT32, value);
     else if (operand == "float")
-        op = _factory.createOperand(eOperandType::FLOAT, value);
+        op = OperandsFactory::getFactory().createOperand(eOperandType::FLOAT, value);
     else if (operand == "double")
-        op = _factory.createOperand(eOperandType::DOUBLE, value);
+        op = OperandsFactory::getFactory().createOperand(eOperandType::DOUBLE, value);
     else
         throw std::runtime_error("avm: some truble in push or assert func - wrong operand string value?");
 

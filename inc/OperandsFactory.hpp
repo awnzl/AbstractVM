@@ -4,13 +4,9 @@
 # include <vector>
 # include <cstdlib>
 # include "IOperand.hpp"
-# include "Operand.hpp"
 # include "eOperandType.hpp"
-# include "Int8.hpp"
-# include "Int16.hpp"
-# include "Int32.hpp"
-# include "Float.hpp"
-# include "Double.hpp"
+
+//todo make this class as singletone
 
 class OperandsFactory {
     std::vector<const IOperand *(OperandsFactory::*)(const std::string &) const> _creators;
@@ -21,14 +17,18 @@ class OperandsFactory {
     const IOperand *createFloat(const std::string &value) const;
     const IOperand *createDouble(const std::string &value) const;
 
-public:
     OperandsFactory();
-    ~OperandsFactory();
-    OperandsFactory(const OperandsFactory &);
-    OperandsFactory &operator=(OperandsFactory &);
-    const OperandsFactory &operator=(const OperandsFactory &);
 
+public:
+    ~OperandsFactory();
+    OperandsFactory(const OperandsFactory &) = delete;
+    OperandsFactory &operator=(OperandsFactory &) = delete;
+    const OperandsFactory &operator=(const OperandsFactory &) = delete;
     const IOperand *createOperand(eOperandType type, std::string const &value) const;
+    static OperandsFactory &getFactory();
+
 };
+
+static OperandsFactory &getFactory();
 
 #endif
