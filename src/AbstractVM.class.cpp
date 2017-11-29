@@ -47,9 +47,11 @@ void AbstractVM::push(std::string &operand, std::string &value) {
 }
 
 void AbstractVM::pop() {
-    if (_avmStack.size() > 0)
+    if (_avmStack.size() > 0) {
+        const IOperand *tmp = *(_avmStack.begin());
         _avmStack.pop();
-    else
+        delete (tmp);
+    } else
         throw std::runtime_error("avm: Instruction pop on an empty stack");
 }
 
