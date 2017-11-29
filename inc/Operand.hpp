@@ -110,6 +110,7 @@ template<typename T> class Operand : public IOperand {
             case '/' : 
                 {
                     auto div = l / r;
+                    std::cout << "l: " << l << " r: " << r << " res: " << div << std::endl;
                     if (checkRange(tp, div, &flg))
                         throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
@@ -121,7 +122,7 @@ template<typename T> class Operand : public IOperand {
                 {
                     bool range;
                     if (tp < 3) {
-                        long mod = (long)l % (long)r;
+                        long mod = static_cast<long>(l) % static_cast<long>(r);
                         ss << mod;
                         range = checkRange(tp, mod, &flg);
                     } else {
@@ -150,8 +151,6 @@ public:
         std::stringstream ss;
         ss << this->_value;
         _instanceString = ss.str();
-        
-        // std::cout << "T : " << typeid(val).name() << std::endl;
     }
 
     Operand(const Operand &op) {
@@ -177,12 +176,10 @@ public:
     const IOperand *operator+(const IOperand &rhs) const { // Sum
             const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            //поднял тип для левого и вызвал функцию для математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '+');
             delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            //поднял тип для правого и вызвал функцию математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '+');
             delete (tmp);
@@ -195,12 +192,10 @@ public:
     const IOperand *operator-(const IOperand &rhs) const { // Difference
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            //поднял тип для левого и вызвал функцию для математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '-');
             delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            //поднял тип для правого и вызвал функцию математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '-');
             delete (tmp);
@@ -213,12 +208,10 @@ public:
     const IOperand *operator*(const IOperand &rhs) const { // Product
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            //поднял тип для левого и вызвал функцию для математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '*');
             delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            //поднял тип для правого и вызвал функцию математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '*');
             delete (tmp);
@@ -234,17 +227,15 @@ public:
         
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            //поднял тип для левого и вызвал функцию для математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '/');
             delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            //поднял тип для правого и вызвал функцию математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '/');
             delete (tmp);
         } else
-        res = mathIt(this->_type, this->_instanceString, rhs.toString(), '/');
+            res = mathIt(this->_type, this->_instanceString, rhs.toString(), '/');
         
         return (res);
     }
@@ -255,12 +246,10 @@ public:
         
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            //поднял тип для левого и вызвал функцию для математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '-');
             delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            //поднял тип для правого и вызвал функцию математики
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '-');
             delete (tmp);

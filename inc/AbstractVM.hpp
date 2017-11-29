@@ -4,6 +4,7 @@
 # include <iostream>
 # include <fstream>
 # include <string>
+# include <map>
 # include "OperandsFactory.hpp"
 # include "AVMLexer.hpp"
 # include "AVMToken.hpp"
@@ -17,9 +18,9 @@
 
 class AbstractVM {
     enum Work {RUN, STOP} _work;
+    std::map<std::string, eOperandType> _types;
+    std::map<AVMToken::TokenType, void (AbstractVM::*)()> _operations;
     AVMStack<const IOperand*> _avmStack;
-
-    const IOperand *produceOperand(std::string &operand, std::string &value);
 
     void push(std::string &operand, std::string &value);
     void pop();
@@ -30,6 +31,7 @@ class AbstractVM {
     void mul();
     void div();
     void mod();
+    void print();
 public:
 
     AbstractVM();
