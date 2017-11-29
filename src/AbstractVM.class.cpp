@@ -47,7 +47,7 @@ void AbstractVM::push(std::string &operand, std::string &value) {
 
 void AbstractVM::pop() {
     if (_avmStack.size() > 0)
-        return (_avmStack.pop());
+        _avmStack.pop();
     else
         throw std::runtime_error("avm: Instruction pop on an empty stack");
 }
@@ -88,12 +88,16 @@ void AbstractVM::add() {
     const IOperand *second = *(_avmStack.begin() + 1);
     _avmStack.pop();
     _avmStack.pop();
-
-    const IOperand *res = (*first) + (*second);
-    _avmStack.push(res);
-
+    std::cout << "add first: " << first->toString() << std::endl;
+    std::cout << "add second: " << second->toString() << std::endl;
+    
+    const IOperand *res = (*second) + (*first);
+    std::cout << "add res: " << res->toString() << std::endl;
     delete (first);
     delete (second);
+    
+    _avmStack.push(res);
+
 }
 
 void AbstractVM::run(char *in = NULL) {
@@ -143,15 +147,19 @@ void AbstractVM::run(char *in = NULL) {
 и в итоге в операнде на самом деле хз что происходит - кругом тип
 s на возврате от typeid(_value).name()*/
 /*                             */
+        std::cout << "First Dump and Add:\n";
         dump();
         add();
         std::cout << "\n";
+        std::cout << "Second Dump and Add:\n";
         dump();
         add();
         std::cout << "\n";
+        std::cout << "Third Dump and Add:\n";
         dump();
         add();
         std::cout << "\n";
+        std::cout << "Last Dump:\n";
         dump();
 
        

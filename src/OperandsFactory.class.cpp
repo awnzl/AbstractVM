@@ -21,7 +21,8 @@ OperandsFactory &OperandsFactory::getFactory() {
     static OperandsFactory factory;
     return (factory);
 }
-
+//todo strtof strtod strtoll -- добавить сюда проверку максимальных размеров
+//в этих функциях уже есть встроенные сигналы о превышении диапазонов
 const IOperand *OperandsFactory::createInt8(std::string const &value) const {
     return (new Int8(std::atoi(value.c_str())));
 }

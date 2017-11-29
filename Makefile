@@ -9,7 +9,7 @@ OBJDIR	= ./obj
 
 SRC		= main.cpp AbstractVM.class.cpp OperandsFactory.class.cpp AVMLexer.class.cpp
 
-ATTR	= -std=c++11 -g
+ATTR	= -std=c++11 #-g
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
