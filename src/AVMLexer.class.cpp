@@ -1,5 +1,4 @@
-// #include "AVMLexer.hpp"
-#include "../inc/AVMLexer.hpp" //todo delete
+#include "AVMLexer.hpp"
 
 unsigned long AVMLexer::count;
 
@@ -29,11 +28,10 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
         count++;
         return (res);
     } else {
-        std::stringstream sss;
-        sss << "avm: Line " << ++count << ": An instruction is unknown";
-        throw (std::runtime_error(sss.str()));
-        sss.clear();
-        sss.str(std::string());
+        ss.clear();
+        ss.str(std::string());
+        ss << "avm: Line " << ++count << ": An instruction is unknown";
+        throw (std::runtime_error(ss.str()));
     }
 
     return (res);

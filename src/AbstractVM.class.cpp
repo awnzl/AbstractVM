@@ -22,8 +22,7 @@ AbstractVM::AbstractVM() : _work(RUN) {
 }
 
 AbstractVM::~AbstractVM() {
-    while (_avmStack.size())
-        this->pop();
+    exit();
 }
 
 AbstractVM::AbstractVM(const AbstractVM &avm) {
@@ -163,6 +162,11 @@ void AbstractVM::mod() {
     delete (second);
     
     _avmStack.push(res);
+}
+
+void AbstractVM::exit() {
+    while (_avmStack.size())
+        this->pop();
 }
 
 void AbstractVM::print() {

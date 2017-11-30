@@ -20,15 +20,15 @@ template<typename T> class Operand : public IOperand {
             case (eOperandType::FLOAT) :
             if (res > std::numeric_limits<float>::max())
                 return (true);
-            else if (res < std::numeric_limits<float>::min()) {
+            else if (res < -std::numeric_limits<float>::max()) {
                 *flg = -1;
                 return (true);
             }
             break;
         case (eOperandType::DOUBLE) :
             if (res > std::numeric_limits<double>::max())
-            return (true);
-            else if (res < std::numeric_limits<double>::min()) {
+                return (true);
+            else if (res < -std::numeric_limits<double>::max()) {
                 *flg = -1;
                 return (true);
             }
@@ -126,7 +126,7 @@ template<typename T> class Operand : public IOperand {
                         range = checkRange(tp, mod, &flg);
                     } else {
                         int cha = l / r;
-                        double mod = l - cha * r;
+                        long double mod = l - cha * r;
                         ss << mod;
                         range = checkRange(tp, mod, &flg);
                     }

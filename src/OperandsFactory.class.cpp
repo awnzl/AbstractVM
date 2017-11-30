@@ -50,19 +50,19 @@ const IOperand *OperandsFactory::createInt32(std::string const &value) const {
 }
 
 const IOperand *OperandsFactory::createFloat(std::string const &value) const {
-    long double res = std::strtold(value.c_str(), NULL);
-    if (res > std::numeric_limits<float>::max() || res == HUGE_VALL)
+    long double res = std::strtof(value.c_str(), NULL);
+    if (res == HUGE_VALF)
         throw std::runtime_error("Overflow on a value or the result of an operation");
-    else if (res < std::numeric_limits<float>::min() || res == -HUGE_VALL) 
+    else if (res == -HUGE_VALF) 
         throw std::runtime_error("Underflow on a value or the result of an operation");
     return (new Float(res));
 }
 
 const IOperand *OperandsFactory::createDouble(std::string const &value) const {
-    long double res = std::strtold(value.c_str(), NULL);
-    if (res > std::numeric_limits<double>::max() || res == HUGE_VALL)
+    double res = std::strtod(value.c_str(), NULL);
+    if (res == HUGE_VAL)
         throw std::runtime_error("Overflow on a value or the result of an operation");
-    else if (res < std::numeric_limits<double>::min() || res == -HUGE_VALL) 
+    else if (res == -HUGE_VAL) 
         throw std::runtime_error("Underflow on a value or the result of an operation");
     return (new Double(res));
 }
