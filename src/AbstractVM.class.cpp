@@ -22,7 +22,8 @@ AbstractVM::AbstractVM() : _work(RUN) {
 }
 
 AbstractVM::~AbstractVM() {
-    //todo free pointers in stack
+    while (_avmStack.size())
+        this->pop();
 }
 
 AbstractVM::AbstractVM(const AbstractVM &avm) {
@@ -47,7 +48,7 @@ void AbstractVM::push(std::string &operand, std::string &value) {
 }
 
 void AbstractVM::pop() {
-    if (_avmStack.size() > 0) {
+    if (_avmStack.size()) {
         const IOperand *tmp = *(_avmStack.begin());
         _avmStack.pop();
         delete (tmp);
@@ -64,6 +65,7 @@ void AbstractVM::dump() {
 }
 
 bool AbstractVM::assert(std::string &operand, std::string &value) {
+    //todo сделать, чтобы оно печатало true в выводе? 
     const IOperand *op = OperandsFactory::getFactory().createOperand(_types[operand], value);
     const IOperand *top = *(_avmStack.begin());
 
@@ -78,11 +80,6 @@ bool AbstractVM::assert(std::string &operand, std::string &value) {
 }
 
 void AbstractVM::add() {
-    /*
-    Unstacks the first two values on the stack, adds them together and stacks the
-    result. If the number of values on the stack is strictly inferior to 2, the program
-    execution must stop with an error.
-    */
     if (_avmStack.size() < 2)
         throw std::runtime_error("The stack is composed of strictly less that two values "\
                             "when an arithmetic instruction is executed");
@@ -91,11 +88,8 @@ void AbstractVM::add() {
     const IOperand *second = *(_avmStack.begin() + 1);
     _avmStack.pop();
     _avmStack.pop();
-    // std::cout << "add first: " << first->toString() << std::endl;
-    // std::cout << "add second: " << second->toString() << std::endl;
     
     const IOperand *res = (*second) + (*first);// v2 op v1 !!!!!!!!!!
-    // std::cout << "add res: " << res->toString() << std::endl;
     delete (first);
     delete (second);
     
@@ -172,62 +166,69 @@ void AbstractVM::mod() {
 }
 
 void AbstractVM::print() {
+    const IOperand *top = *(_avmStack.begin());
 
+    if (top->getType() == eOperandType::INT8) {
+        char c = std::atoi(top->toString().c_str());
+        std::cout << "'" << c << "'" << std::endl;
+    } else
+        throw std::runtime_error("avm: An print instruction is not true");
 }
 
-
-void AbstractVM::run(char *in = NULL) {
-    //получает отвалидированные данные и начинает свое дело...
-    //нужно обрабатывать эксепшены (ЗАПИЛИТЬ КЛАССЫ ДЛЯ ИСКЛЮЧЕНИЙ),
-    //чтобы выполнение программы не прерывалось на этом,
-    //как в калькуляторе dc
-    /*
-    AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
-    another container that behaves like a stack is up to you. Whatever the container, it MUST
-    only contain pointers to the abstract type IOperand.
-    */
-
-    //лексер разбирает на токены, а токены парсятся парсером
-    //т.е. по регекспу разобрать на токены? А токены уже парсонуть? 
-
-    while (_work == RUN) {
-        
-        if (in) {//name of the arg file, c-string
-            //open the file
-            //read the string
-            //lex and parse it
-            //check result
-            //do what result is need
-
-            try {
-                AVMToken *tok;
-                std::ifstream ifs(in, std::ios_base::in);
-                std::string buff;
-                while(std::getline(ifs, buff)) { 
-                    tok = NULL;
-                    if ((tok = AVMLexer::getLexer().lexIt(buff))) {
-                        if (tok->type == AVMToken::TokenType::PUSH) {
-                            push(tok->operand, tok->value);
-                        } else if (tok->type == AVMToken::TokenType::ASSERT) {
-                            //
-                        } else if (tok->type == AVMToken::TokenType::EXIT) {
-                            //do what?
-                        } else {
-                            (this->*(_operations[tok->type]))();
-                            std::cout << std::endl;//todo delete
-                        }
-                    }
+void AbstractVM::fileRead(char *in) {
+    try {
+        AVMToken *tok;
+        std::ifstream ifs(in, std::ios_base::in);
+        std::string buff;
+        while(std::getline(ifs, buff)) { 
+            tok = NULL;
+            if ((tok = AVMLexer::getLexer().lexIt(buff))) {
+                if (tok->type == AVMToken::TokenType::PUSH) {
+                    push(tok->operand, tok->value);
+                } else if (tok->type == AVMToken::TokenType::ASSERT) {
+                    //
+                } else if (tok->type == AVMToken::TokenType::EXIT) {
+                    //terminate program
+                    //free all dynamic data end exit
+                    //close all streams
+                    _work = AbstractVM::Work::STOP;
+                } else {
+                    (this->*(_operations[tok->type]))();
+                    std::cout << std::endl;//todo delete
                 }
-
-                ifs.close();
-            } catch (std::exception &ex) {
-                //todo обработать исключения
-                std::cout << ex.what() << std::endl;
             }
-      
-        } else {
-            //читаем из стандартного ввода, отдаем лексеру, парсим валидный результат
         }
+
+        ifs.close();
+    } catch (std::exception &ex) {
+        //todo обработать исключения
+        std::cout << ex.what() << std::endl;
+    }
+}
+
+void AbstractVM::consoleRead() {
+    std::cout << " -------->>> console read debug" <<std::endl;
+    try {
+
+    } catch (std::exception &ex) {
+        std::cout << ex.what() << std::endl;
+    }
+}
+
+/*
+AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
+another container that behaves like a stack is up to you. Whatever the container, it MUST
+only contain pointers to the abstract type IOperand.
+*/
+void AbstractVM::run(char *in = NULL) {
+
+    while (_work == AbstractVM::Work::RUN) {
+        
+        if (in)
+            fileRead(in);
+        else
+            //читаем из стандартного ввода, отдаем лексеру, парсим валидный результат
+            consoleRead();
 
 
         if (true) {//todo debug?

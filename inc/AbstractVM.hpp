@@ -32,6 +32,10 @@ class AbstractVM {
     void div();
     void mod();
     void print();
+
+    void fileRead(char *in);
+    void consoleRead();
+
 public:
 
     AbstractVM();

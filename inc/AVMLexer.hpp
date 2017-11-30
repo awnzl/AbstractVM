@@ -2,13 +2,16 @@
 # define __AVMLEXER_HPP
 
 # include <string>
+# include <sstream>
 # include <regex>
 # include <stdexcept>
 # include "AVMToken.hpp"
 
 class AVMLexer {
     std::regex _ptrnINSRT;
-    std::regex _ptrnENDC;
+    std::regex _ptrnCOMM;
+    static unsigned long count;
+    std::stringstream ss;
     
     AVMLexer ();
     AVMToken *parseIt(std::string &s);
@@ -19,6 +22,8 @@ public:
     static AVMLexer &getLexer();
     AVMToken *lexIt(std::string &s);
 };
+
+static unsigned long count;
 
 static AVMLexer &getLexer();
 

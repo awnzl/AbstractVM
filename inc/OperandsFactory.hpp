@@ -3,6 +3,7 @@
 
 # include <vector>
 # include <cstdlib>
+# include <cmath>
 # include "IOperand.hpp"
 # include "eOperandType.hpp"
 

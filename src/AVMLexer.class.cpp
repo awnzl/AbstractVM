@@ -1,12 +1,17 @@
-#include "AVMLexer.hpp"
+// #include "AVMLexer.hpp"
+#include "../inc/AVMLexer.hpp" //todo delete
+
+unsigned long AVMLexer::count;
 
 AVMLexer::AVMLexer () {
     _ptrnINSRT = std::string("push ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
-                            "(float\\([-]?\\d+\\.\\d+\\))|(double\\([-]?\\d+\\.\\d+\\)))|pop|dump|"\
-                            "assert ((int8\\([-]?\\d+\\))|(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|"\
-                            "(float\\([-]?\\d+\\.\\d+\\))|(double\\([-]?\\d+\\.\\d+\\)))|add|sub|mul|"\
-                            "div|mod|print|exit|(\n+)");
-    _ptrnENDC = std::string(";.+|;;");
+                            "(float\\([-]?\\d+\\.\\d+\\))|(double\\([-]?\\d+\\.\\d+\\)))([ |\\t]*?;.*)?|"\
+                            "pop([ |\\t]*?;.*)?|dump([ |\\t]*?;.*)?|assert ((int8\\([-]?\\d+\\))|"\
+                            "(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|(float\\([-]?\\d+\\.\\d+\\))|"\
+                            "(double\\([-]?\\d+\\.\\d+\\)))([ |\\t]*?;.*)?|add([ |\\t]*?;.*)?|"\
+                            "sub([ |\\t]*?;.*)?|mul([ |\\t]*?;.*)?|div([ |\\t]*?;.*)?|mod([ |\\t]*?;.*)?|"\
+                            "print([ |\\t]*?;.*)?|exit([ |\\t]*?;.*)?|(\n+)|( +)|;;");
+    _ptrnCOMM = std::string("([ |\\t]*?;.*)?");
 }
 
 AVMLexer &AVMLexer::getLexer() {
@@ -16,16 +21,20 @@ AVMLexer &AVMLexer::getLexer() {
 
 AVMToken *AVMLexer::lexIt(std::string &s) {
     AVMToken *res = NULL;
-
-    //todo допилить обработку комментариев и конца ввода из консоли
-    //в частности, нужен ввод комментов после каждой из строк, также в начале строки
-    //
-    if (std::regex_match(s, _ptrnINSRT))
+    
+    if (std::regex_match(s, _ptrnINSRT)) {
+        count++;
         res = parseIt(s);
-    else if (std::regex_match(s, _ptrnENDC))
-        return (res);//todo comment, do with it something
-    else
-        throw (std::runtime_error("avm: An instruction is unknown"));
+    } else if (std::regex_match(s, _ptrnCOMM)) {
+        count++;
+        return (res);
+    } else {
+        std::stringstream sss;
+        sss << "avm: Line " << ++count << ": An instruction is unknown";
+        throw (std::runtime_error(sss.str()));
+        sss.clear();
+        sss.str(std::string());
+    }
 
     return (res);
 }
@@ -64,4 +73,5 @@ AVMToken *AVMLexer::parseIt(std::string &s) {
     "mod",
     "div",
     "exit",
+    ";;",
 */

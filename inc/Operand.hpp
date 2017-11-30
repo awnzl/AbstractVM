@@ -110,7 +110,6 @@ template<typename T> class Operand : public IOperand {
             case '/' : 
                 {
                     auto div = l / r;
-                    std::cout << "l: " << l << " r: " << r << " res: " << div << std::endl;
                     if (checkRange(tp, div, &flg))
                         throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
@@ -147,9 +146,8 @@ public:
     Operand() = delete;
 
     Operand(eOperandType type, T val) : _type(type), _value(val) {
-        std::string arr[] = {"Int8", "Int16", "Int32", "Float", "Double"};
         std::stringstream ss;
-        ss << this->_value;
+        ss << ((type == eOperandType::INT8) ? static_cast<int16_t>(val) : val);
         _instanceString = ss.str();
     }
 

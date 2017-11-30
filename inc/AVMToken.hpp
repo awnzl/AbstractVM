@@ -17,7 +17,8 @@ struct AVMToken {
         {"dump", TokenType::DUMP},
         {"pop", TokenType::POP},
         {"print", TokenType::PRINT},
-        {"exit", TokenType::EXIT}
+        {"exit", TokenType::EXIT},
+        {";;", TokenType::EXIT}
     };
     std::string operand;
     std::string value;
