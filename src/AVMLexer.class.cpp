@@ -19,11 +19,9 @@ AVMLexer &AVMLexer::getLexer() {
 }
 
 AVMToken *AVMLexer::lexIt(std::string &s) {
-    AVMToken *res = NULL;
-    
     if (std::regex_match(s, _ptrnINSRT)) {
         count++;
-        res = parseIt(s);
+        return (parseIt(s));
     } else if (std::regex_match(s, _ptrnCOMM)) {
         count++;
         return (NULL);
@@ -34,7 +32,7 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
         throw (AVMException(ss.str()));
     }
 
-    return (res);
+    return (NULL);
 }
 
 AVMToken *AVMLexer::parseIt(std::string &s) {
@@ -48,28 +46,3 @@ AVMToken *AVMLexer::parseIt(std::string &s) {
 
     return (res);
 }
-
-
-/*
-    "push int8(42)",
-    "push int8(-42)",
-    "push int16(42)",
-    "push int32(42)",
-    "push float(44.55)",
-    "push double(42.42)",
-    "assert float(42.42)",
-    "assert double(-42.42)",
-    "assert int8(42)",
-    "assert int16(42)",
-    "assert int32(42)",
-    "add",
-    "sub",
-    "mul",
-    "dump",
-    "pop",
-    "print",
-    "mod",
-    "div",
-    "exit",
-    ";;",
-*/

@@ -1,12 +1,9 @@
 #ifndef __OPERAND_HPP
 # define __OPERAND_HPP
 
-# include <stdexcept>
 # include <sstream>
 # include <limits>
 # include <cmath>
-# include <iostream>//todo delete
-# include <typeinfo>//todo delete
 # include "OperandsFactory.hpp"
 # include "IOperand.hpp"
 # include "AVMException.hpp"
@@ -169,8 +166,6 @@ public:
     eOperandType getType(void) const { // _Type of the instance
         return (this->_type);
     }
-
-//todo test all this
 
     const IOperand *operator+(const IOperand &rhs) const { // Sum
             const IOperand *res = NULL;

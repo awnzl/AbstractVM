@@ -31,7 +31,6 @@ AbstractVM::AbstractVM(const AbstractVM &avm) {
     this->_avmStack = avm._avmStack;
     this->_types = avm._types;
     this->_operations = avm._operations;
-    //...
 }
 
 AbstractVM &AbstractVM::operator=(AbstractVM &avm) {
@@ -39,7 +38,6 @@ AbstractVM &AbstractVM::operator=(AbstractVM &avm) {
     this->_avmStack = avm._avmStack;
     this->_types = avm._types;
     this->_operations = avm._operations;
-    //...
     return (*this);
 }
 
@@ -65,7 +63,6 @@ void AbstractVM::dump() {
 }
 
 bool AbstractVM::assert(std::string &operand, std::string &value) {
-    //todo сделать, чтобы оно печатало true в выводе? 
     const IOperand *op = OperandsFactory::getFactory().createOperand(_types[operand], value);
     const IOperand *top = *(_avmStack.begin());
 
@@ -89,7 +86,7 @@ void AbstractVM::add() {
     _avmStack.pop();
     _avmStack.pop();
     
-    const IOperand *res = (*second) + (*first);// v2 op v1 !!!!!!!!!!
+    const IOperand *res = (*second) + (*first);
     delete (first);
     delete (second);
     
@@ -106,7 +103,7 @@ void AbstractVM::sub() {
     _avmStack.pop();
     _avmStack.pop();
 
-    const IOperand *res = (*second) - (*first);// v2 op v1 !!!!!!!!!!
+    const IOperand *res = (*second) - (*first);
     delete (first);
     delete (second);
 
@@ -122,7 +119,7 @@ void AbstractVM::mul() {
     _avmStack.pop();
     _avmStack.pop();
     
-    const IOperand *res = (*second) * (*first);// v2 op v1 !!!!!!!!!!
+    const IOperand *res = (*second) * (*first);
     delete (first);
     delete (second);
     
@@ -138,7 +135,7 @@ void AbstractVM::div() {
     _avmStack.pop();
     _avmStack.pop();
     
-    const IOperand *res = (*second) / (*first);// v2 op v1 !!!!!!!!!!
+    const IOperand *res = (*second) / (*first);
     delete (first);
     delete (second);
     
@@ -154,7 +151,7 @@ void AbstractVM::mod() {
     _avmStack.pop();
     _avmStack.pop();
     
-    const IOperand *res = (*second) % (*first);// v2 op v1 !!!!!!!!!!
+    const IOperand *res = (*second) % (*first);
     delete (first);
     delete (second);
     
@@ -164,6 +161,7 @@ void AbstractVM::mod() {
 void AbstractVM::exit() {
     while (_avmStack.size())
         this->pop();
+    _work = AbstractVM::Work::STOP;
 }
 
 void AbstractVM::print() {
@@ -178,66 +176,68 @@ void AbstractVM::print() {
 }
 
 void AbstractVM::fileRead(char *in) {
-    try {
-        AVMToken *tok;
-        std::ifstream ifs(in, std::ios_base::in);
-        std::string buff;
+    AVMToken *tok;
+    std::ifstream ifs(in);
+    std::string buff;
+    if (ifs) {
         while(std::getline(ifs, buff)) { 
             tok = NULL;
-            if ((tok = AVMLexer::getLexer().lexIt(buff))) {
-                if (tok->type == AVMToken::TokenType::PUSH) {
-                    push(tok->operand, tok->value);
-                } else if (tok->type == AVMToken::TokenType::ASSERT) {
-                    assert(tok->operand, tok->value);
-                } else if (tok->type == AVMToken::TokenType::EXIT) {
-                    _work = AbstractVM::Work::STOP;
-                    exit();
-                    return;
-                } else {
-                    (this->*(_operations[tok->type]))();
-                    std::cout << std::endl;//todo delete
+            try {
+                if ((tok = AVMLexer::getLexer().lexIt(buff))) {
+                    if (tok->type == AVMToken::TokenType::PUSH) {
+                        push(tok->operand, tok->value);
+                    } else if (tok->type == AVMToken::TokenType::ASSERT) {
+                        assert(tok->operand, tok->value);
+                    } else if (tok->type == AVMToken::TokenType::EXIT) {
+                        exit();
+                        return;
+                    } else {
+                        (this->*(_operations[tok->type]))();
+                    }
                 }
+            } catch (AVMException &ex) {
+                std::cout << ex.what() << std::endl;
             }
         }
         ifs.close();
-    } catch (std::exception &ex) {
-        std::cout << ex.what() << std::endl;
+        _work = AbstractVM::Work::STOP;
+        throw AVMException("avm: The program doesn’t have an exit instruction");
     }
 }
 
 void AbstractVM::consoleRead() {
-    try {
-        AVMToken *tok;
-        std::string buff;
-        while(std::getline(std::cin, buff)) { 
-            tok = NULL;
+    AVMToken *tok;
+    std::string buff;
+    while(std::getline(std::cin, buff)) { 
+        tok = NULL;
+        try {
             if ((tok = AVMLexer::getLexer().lexIt(buff))) {
                 if (tok->type == AVMToken::TokenType::PUSH) {
                     push(tok->operand, tok->value);
                 } else if (tok->type == AVMToken::TokenType::ASSERT) {
                     assert(tok->operand, tok->value);
                 } else if (tok->type == AVMToken::TokenType::EXIT) {
-                    _work = AbstractVM::Work::STOP;
                     exit();
                     return;
                 } else {
                     (this->*(_operations[tok->type]))();
-                    std::cout << std::endl;//todo delete
                 }
             }
+        } catch (AVMException &ex) {
+            std::cout << ex.what() << std::endl;
         }
-    } catch (std::exception &ex) {
-        std::cout << ex.what() << std::endl;
     }
 }
 
 void AbstractVM::run(char *in = NULL) {
-//todo пофиксить ситуацию с наличием номера линии в исключениях для 
-//случая считывания из консоли? 
-    while (_work == AbstractVM::Work::RUN) {
-        if (in)
-            fileRead(in);
-        else
-            consoleRead();
+    try {
+        while (_work == AbstractVM::Work::RUN) {
+            if (in)
+                fileRead(in);
+            else
+                consoleRead();
+        }
+    } catch (std::exception &ex) {
+        std::cout << ex.what() << std::endl;
     }
 }

@@ -7,8 +7,6 @@
 # include "IOperand.hpp"
 # include "eOperandType.hpp"
 
-//todo make this class as singletone
-
 class OperandsFactory {
     std::vector<const IOperand *(OperandsFactory::*)(const std::string &) const> _creators;
 
