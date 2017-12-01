@@ -11,6 +11,7 @@
 class AVMLexer {
     std::regex _ptrnINSRT;
     std::regex _ptrnCOMM;
+    std::regex _ptrnTP;
     static unsigned long count;
     std::stringstream ss;
     
@@ -21,6 +22,7 @@ public:
     AVMLexer(const AVMLexer &) = delete;
     AVMLexer &operator=(AVMLexer &) = delete;
     static AVMLexer &getLexer();
+    static void resetCount();
     AVMToken *lexIt(std::string &s);
 };
 

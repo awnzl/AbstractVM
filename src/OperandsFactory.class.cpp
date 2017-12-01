@@ -51,19 +51,19 @@ const IOperand *OperandsFactory::createInt32(std::string const &value) const {
 }
 
 const IOperand *OperandsFactory::createFloat(std::string const &value) const {
-    float res = std::strtof(value.c_str(), NULL);
-    if (res == HUGE_VALF)
+    double res = std::strtod(value.c_str(), NULL);
+    if (res > std::numeric_limits<float>::max())
         throw AVMException("Overflow on a value or the result of an operation");
-    else if (res == -HUGE_VALF) 
+    else if (res < -std::numeric_limits<float>::max())
         throw AVMException("Underflow on a value or the result of an operation");
     return (new Float(res));
 }
 
 const IOperand *OperandsFactory::createDouble(std::string const &value) const {
-    double res = std::strtod(value.c_str(), NULL);
-    if (res == HUGE_VAL)
+    long double res = std::strtold(value.c_str(), NULL);
+    if (res > std::numeric_limits<double>::max())
         throw AVMException("Overflow on a value or the result of an operation");
-    else if (res == -HUGE_VAL) 
+    else if (res < -std::numeric_limits<double>::max())
         throw AVMException("Underflow on a value or the result of an operation");
     return (new Double(res));
 }

@@ -1,7 +1,7 @@
 #include "AbstractVM.hpp"
 #include "AVMException.hpp"
 
-AbstractVM::AbstractVM() : _work(RUN) {
+AbstractVM::AbstractVM() {
     _types = {
         {"int8", eOperandType::INT8},
         {"int16", eOperandType::INT16},
@@ -18,7 +18,10 @@ AbstractVM::AbstractVM() : _work(RUN) {
         {AVMToken::TokenType::MOD, &AbstractVM::mod},
         {AVMToken::TokenType::DUMP, &AbstractVM::dump},
         {AVMToken::TokenType::POP, &AbstractVM::pop},
-        {AVMToken::TokenType::PRINT, &AbstractVM::print}
+        {AVMToken::TokenType::PRINT, &AbstractVM::print},
+        {AVMToken::TokenType::CLEAN, &AbstractVM::clean},
+        {AVMToken::TokenType::DUP, &AbstractVM::dup},
+        {AVMToken::TokenType::SWAP, &AbstractVM::swap}
     };
 }
 
@@ -83,15 +86,15 @@ void AbstractVM::add() {
 
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
-    _avmStack.pop();
-    _avmStack.pop();
-    
+            
     const IOperand *res = (*second) + (*first);
-    delete (first);
-    delete (second);
     
+    _avmStack.pop();
+    _avmStack.pop();
     _avmStack.push(res);
 
+    delete (first);
+    delete (second);
 }
 
 void AbstractVM::sub() {
@@ -100,14 +103,15 @@ void AbstractVM::sub() {
 
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
-    _avmStack.pop();
-    _avmStack.pop();
-
+            
     const IOperand *res = (*second) - (*first);
+    
+    _avmStack.pop();
+    _avmStack.pop();
+    _avmStack.push(res);
+
     delete (first);
     delete (second);
-
-    _avmStack.push(res);
 }
 
 void AbstractVM::mul() {
@@ -116,14 +120,15 @@ void AbstractVM::mul() {
     
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
-    _avmStack.pop();
-    _avmStack.pop();
-    
+        
     const IOperand *res = (*second) * (*first);
+    
+    _avmStack.pop();
+    _avmStack.pop();
+    _avmStack.push(res);
+
     delete (first);
     delete (second);
-    
-    _avmStack.push(res);
 }
 
 void AbstractVM::div() {
@@ -132,14 +137,15 @@ void AbstractVM::div() {
     
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
-    _avmStack.pop();
-    _avmStack.pop();
-    
+        
     const IOperand *res = (*second) / (*first);
+    
+    _avmStack.pop();
+    _avmStack.pop();
+    _avmStack.push(res);
+
     delete (first);
     delete (second);
-    
-    _avmStack.push(res);
 }
 
 void AbstractVM::mod() {
@@ -148,14 +154,15 @@ void AbstractVM::mod() {
     
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
-    _avmStack.pop();
-    _avmStack.pop();
-    
+            
     const IOperand *res = (*second) % (*first);
+    
+    _avmStack.pop();
+    _avmStack.pop();
+    _avmStack.push(res);
+
     delete (first);
     delete (second);
-    
-    _avmStack.push(res);
 }
 
 void AbstractVM::exit() {
@@ -173,6 +180,26 @@ void AbstractVM::print() {
         std::cout << "'" << std::endl;
     } else
         throw AVMException("avm: An print instruction is not true");
+}
+
+void AbstractVM::clean() {
+    while (_avmStack.size())
+        this->pop();
+}
+
+void AbstractVM::dup() {
+    const IOperand *top = *(_avmStack.begin());
+    const IOperand *dup = OperandsFactory::getFactory().createOperand(top->getType(), top->toString());
+    _avmStack.push(dup);
+}
+
+void AbstractVM::swap() {
+    const IOperand *first = *(_avmStack.begin());
+    const IOperand *second = *(_avmStack.begin() + 1);
+    _avmStack.pop();
+    _avmStack.pop();
+    _avmStack.push(first);
+    _avmStack.push(second);
 }
 
 void AbstractVM::fileRead(char *in) {
@@ -231,6 +258,7 @@ void AbstractVM::consoleRead() {
 
 void AbstractVM::run(char *in = NULL) {
     try {
+        _work = AbstractVM::Work::RUN;
         while (_work == AbstractVM::Work::RUN) {
             if (in)
                 fileRead(in);

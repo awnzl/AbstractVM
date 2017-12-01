@@ -9,8 +9,10 @@ AVMLexer::AVMLexer () {
                             "(int16\\([-]?\\d+\\))|(int32\\([-]?\\d+\\))|(float\\([-]?\\d+\\.\\d+\\))|"\
                             "(double\\([-]?\\d+\\.\\d+\\)))([ |\\t]*?;.*)?|add([ |\\t]*?;.*)?|"\
                             "sub([ |\\t]*?;.*)?|mul([ |\\t]*?;.*)?|div([ |\\t]*?;.*)?|mod([ |\\t]*?;.*)?|"\
-                            "print([ |\\t]*?;.*)?|exit([ |\\t]*?;.*)?|(\n+)|( +)|;;");
+                            "print([ |\\t]*?;.*)?|exit([ |\\t]*?;.*)?|(\n+)|( +)|;;|swap([ |\\t]*?;.*)?|"\
+                            "dup([ |\\t]*?;.*)?|clean([ |\\t]*?;.*)?");
     _ptrnCOMM = std::string("([ |\\t]*?;.*)?");
+    _ptrnTP = std::string("push|pop|dump|assert|add|sub|mul|div|mod|print|exit|;;|swap|dup|clean");
 }
 
 AVMLexer &AVMLexer::getLexer() {
@@ -35,10 +37,16 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
     return (NULL);
 }
 
+void AVMLexer::resetCount() {
+    count = 0;
+}
+
 AVMToken *AVMLexer::parseIt(std::string &s) {
     AVMToken *res = new AVMToken();
 
-    res->type = res->m[s.substr(0, (s.find(" ") == std::string::npos) ? s.length() : s.find(" "))];
+    std::smatch match;
+    std::regex_search(s, match, _ptrnTP);
+    res->type = res->m[match.str()];
     if (res->type == AVMToken::TokenType::PUSH || res->type == AVMToken::TokenType::ASSERT) {
         res->operand = s.substr(s.find(" ") + 1, s.find("(") - 1 - s.find(" "));
         res->value = s.substr(s.find("(") + 1, s.find(")") - 1 - s.find("("));

@@ -28,6 +28,10 @@ class AbstractVM {
     void print();
     void exit();
 
+    void dup();
+    void clean();
+    void swap();
+
     void fileRead(char *in);
     void consoleRead();
 

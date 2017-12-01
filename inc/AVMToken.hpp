@@ -5,7 +5,7 @@
 # include <map>
 
 struct AVMToken {
-    enum TokenType {PUSH, ASSERT, ADD, SUB, MUL, MOD, DIV, DUMP, POP, PRINT, EXIT} type;
+    enum TokenType {PUSH, ASSERT, ADD, SUB, MUL, MOD, DIV, DUMP, POP, PRINT, CLEAN, DUP, SWAP, EXIT} type;
     std::map<std::string, TokenType> m = {
         {"push", TokenType::PUSH},
         {"assert", TokenType::ASSERT},
@@ -18,7 +18,10 @@ struct AVMToken {
         {"pop", TokenType::POP},
         {"print", TokenType::PRINT},
         {"exit", TokenType::EXIT},
-        {";;", TokenType::EXIT}
+        {";;", TokenType::EXIT},
+        {"clean", TokenType::CLEAN},
+        {"dup", TokenType::DUP},
+        {"swap", TokenType::SWAP}
     };
     std::string operand;
     std::string value;

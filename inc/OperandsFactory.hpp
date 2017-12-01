@@ -6,6 +6,7 @@
 # include <cmath>
 # include "IOperand.hpp"
 # include "eOperandType.hpp"
+# include "AVMException.hpp"
 
 class OperandsFactory {
     std::vector<const IOperand *(OperandsFactory::*)(const std::string &) const> _creators;

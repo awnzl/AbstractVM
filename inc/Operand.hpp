@@ -241,14 +241,14 @@ public:
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
-            res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '-');
+            res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '%');
             delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
             const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
-            res = mathIt(this->_type, this->_instanceString, tmp->toString(), '-');
+            res = mathIt(this->_type, this->_instanceString, tmp->toString(), '%');
             delete (tmp);
         } else
-            res = mathIt(this->_type, this->_instanceString, rhs.toString(), '-');
+            res = mathIt(this->_type, this->_instanceString, rhs.toString(), '%');
 
         return (res);
     }
