@@ -31,7 +31,7 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
         ss.clear();
         ss.str(std::string());
         ss << "avm: Line " << ++count << ": An instruction is unknown";
-        throw (std::runtime_error(ss.str()));
+        throw (AVMException(ss.str()));
     }
 
     return (res);

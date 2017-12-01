@@ -6,6 +6,7 @@
 # include <regex>
 # include <stdexcept>
 # include "AVMToken.hpp"
+# include "AVMException.hpp"
 
 class AVMLexer {
     std::regex _ptrnINSRT;

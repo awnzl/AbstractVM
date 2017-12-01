@@ -1,4 +1,5 @@
 #include "AbstractVM.hpp"
+#include "AVMException.hpp"
 
 AbstractVM::AbstractVM() : _work(RUN) {
     _types = {
@@ -52,7 +53,7 @@ void AbstractVM::pop() {
         _avmStack.pop();
         delete (tmp);
     } else
-        throw std::runtime_error("avm: Instruction pop on an empty stack");
+        throw AVMException("avm: Instruction pop on an empty stack");
 }
 
 void AbstractVM::dump() {
@@ -70,18 +71,18 @@ bool AbstractVM::assert(std::string &operand, std::string &value) {
 
     if (op->getType() == top->getType() && op->toString() == top->toString()) {
         delete (op);
-        return (true);
+        std::cout << "Value at the top of the stack is equal to "
+                  << operand << "(" << value << ")" << std::endl;
     } else {
         delete (op);
-        throw std::runtime_error("avm: An assert instruction is not true");
+        throw AVMException("avm: An assert instruction is not true");
     }
     return (false);
 }
 
 void AbstractVM::add() {
     if (_avmStack.size() < 2)
-        throw std::runtime_error("The stack is composed of strictly less that two values "\
-                            "when an arithmetic instruction is executed");
+        throw AVMException("avm: The stack is composed less that two values ");
 
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
@@ -98,8 +99,7 @@ void AbstractVM::add() {
 
 void AbstractVM::sub() {
     if (_avmStack.size() < 2)
-        throw std::runtime_error("The stack is composed of strictly less that two values "\
-                            "when an arithmetic instruction is executed");
+        throw AVMException("avm: The stack is composed less that two values ");
 
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
@@ -115,8 +115,7 @@ void AbstractVM::sub() {
 
 void AbstractVM::mul() {
     if (_avmStack.size() < 2)
-        throw std::runtime_error("The stack is composed of strictly less that two values "\
-                            "when an arithmetic instruction is executed");
+        throw AVMException("avm: The stack is composed less that two values ");
     
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
@@ -132,8 +131,7 @@ void AbstractVM::mul() {
 
 void AbstractVM::div() {
     if (_avmStack.size() < 2)
-        throw std::runtime_error("The stack is composed of strictly less that two values "\
-                            "when an arithmetic instruction is executed");
+        throw AVMException("avm: The stack is composed less that two values ");
     
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
@@ -149,8 +147,7 @@ void AbstractVM::div() {
 
 void AbstractVM::mod() {
     if (_avmStack.size() < 2)
-        throw std::runtime_error("The stack is composed of strictly less that two values "\
-                            "when an arithmetic instruction is executed");
+        throw AVMException("avm: The stack is composed less that two values ");
     
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
@@ -174,9 +171,10 @@ void AbstractVM::print() {
 
     if (top->getType() == eOperandType::INT8) {
         char c = std::atoi(top->toString().c_str());
-        std::cout << "'" << c << "'" << std::endl;
+        std::cout << "'" << c;
+        std::cout << "'" << std::endl;
     } else
-        throw std::runtime_error("avm: An print instruction is not true");
+        throw AVMException("avm: An print instruction is not true");
 }
 
 void AbstractVM::fileRead(char *in) {
@@ -190,54 +188,56 @@ void AbstractVM::fileRead(char *in) {
                 if (tok->type == AVMToken::TokenType::PUSH) {
                     push(tok->operand, tok->value);
                 } else if (tok->type == AVMToken::TokenType::ASSERT) {
-                    //
+                    assert(tok->operand, tok->value);
                 } else if (tok->type == AVMToken::TokenType::EXIT) {
-                    //terminate program
-                    //free all dynamic data end exit
-                    //close all streams
                     _work = AbstractVM::Work::STOP;
+                    exit();
+                    return;
                 } else {
                     (this->*(_operations[tok->type]))();
                     std::cout << std::endl;//todo delete
                 }
             }
         }
-
         ifs.close();
     } catch (std::exception &ex) {
-        //todo обработать исключения
         std::cout << ex.what() << std::endl;
     }
 }
 
 void AbstractVM::consoleRead() {
-    std::cout << " -------->>> console read debug" <<std::endl;
     try {
-
+        AVMToken *tok;
+        std::string buff;
+        while(std::getline(std::cin, buff)) { 
+            tok = NULL;
+            if ((tok = AVMLexer::getLexer().lexIt(buff))) {
+                if (tok->type == AVMToken::TokenType::PUSH) {
+                    push(tok->operand, tok->value);
+                } else if (tok->type == AVMToken::TokenType::ASSERT) {
+                    assert(tok->operand, tok->value);
+                } else if (tok->type == AVMToken::TokenType::EXIT) {
+                    _work = AbstractVM::Work::STOP;
+                    exit();
+                    return;
+                } else {
+                    (this->*(_operations[tok->type]))();
+                    std::cout << std::endl;//todo delete
+                }
+            }
+        }
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
     }
 }
 
-/*
-AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
-another container that behaves like a stack is up to you. Whatever the container, it MUST
-only contain pointers to the abstract type IOperand.
-*/
 void AbstractVM::run(char *in = NULL) {
-
+//todo пофиксить ситуацию с наличием номера линии в исключениях для 
+//случая считывания из консоли? 
     while (_work == AbstractVM::Work::RUN) {
-        
         if (in)
             fileRead(in);
         else
-            //читаем из стандартного ввода, отдаем лексеру, парсим валидный результат
             consoleRead();
-
-
-        if (true) {//todo debug?
-            std::cout << "All works\n";//todo debug
-            _work = STOP;
-        }
     }
 }

@@ -7,7 +7,8 @@ SRCDIR	= ./src
 INCDIR	= ./inc
 OBJDIR	= ./obj
 
-SRC		= main.cpp AbstractVM.class.cpp OperandsFactory.class.cpp AVMLexer.class.cpp
+SRC		= main.cpp AbstractVM.class.cpp OperandsFactory.class.cpp AVMLexer.class.cpp \
+		  AVMException.class.cpp
 
 ATTR	= -std=c++11 #-g
 

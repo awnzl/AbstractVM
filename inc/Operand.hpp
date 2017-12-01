@@ -9,6 +9,7 @@
 # include <typeinfo>//todo delete
 # include "OperandsFactory.hpp"
 # include "IOperand.hpp"
+# include "AVMException.hpp"
 
 template<typename T> class Operand : public IOperand {
     eOperandType _type;
@@ -26,9 +27,9 @@ template<typename T> class Operand : public IOperand {
             }
             break;
         case (eOperandType::DOUBLE) :
-            if (res > std::numeric_limits<double>::max())
+            if (res == NAN)
                 return (true);
-            else if (res < -std::numeric_limits<double>::max()) {
+            else if (res == -NAN) {
                 *flg = -1;
                 return (true);
             }
@@ -81,7 +82,7 @@ template<typename T> class Operand : public IOperand {
                 {
                     auto add = l + r;
                     if (checkRange(tp, add, &flg))
-                        throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
+                        throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
                     ss << add;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
@@ -91,7 +92,7 @@ template<typename T> class Operand : public IOperand {
                 {
                     auto sub = l - r;
                     if (checkRange(tp, sub, &flg))
-                        throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
+                        throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
                     ss << sub;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
@@ -101,7 +102,7 @@ template<typename T> class Operand : public IOperand {
                 {
                     auto mul = l * r;
                     if (checkRange(tp, mul, &flg))
-                        throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
+                        throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
                     ss << mul;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
@@ -111,7 +112,7 @@ template<typename T> class Operand : public IOperand {
                 {
                     auto div = l / r;
                     if (checkRange(tp, div, &flg))
-                        throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
+                        throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
                     ss << div;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
@@ -126,12 +127,12 @@ template<typename T> class Operand : public IOperand {
                         range = checkRange(tp, mod, &flg);
                     } else {
                         int cha = l / r;
-                        long double mod = l - cha * r;
+                        double mod = l - cha * r;
                         ss << mod;
                         range = checkRange(tp, mod, &flg);
                     }
                     if (range)
-                        throw std::runtime_error((flg > 0) ? "Overflow on a value or the result of an operation"
+                        throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
 
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
@@ -221,7 +222,7 @@ public:
 
     const IOperand *operator/(const IOperand &rhs) const { // Quotient
         if (rhs.toString() == "0" || rhs.toString() == "0.0")
-            throw (std::runtime_error("avm: division by zero"));
+            throw (AVMException("avm: division by zero"));
         
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
@@ -240,7 +241,7 @@ public:
     
     const IOperand *operator%(const IOperand &rhs) const { // Modulo
         if (rhs.toString() == "0" || rhs.toString() == "0.0")
-            throw (std::runtime_error("avm: modulo by zero"));
+            throw (AVMException("avm: modulo by zero"));
         
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
