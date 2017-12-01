@@ -26,7 +26,7 @@ AVMToken *AVMLexer::lexIt(std::string &s) {
         res = parseIt(s);
     } else if (std::regex_match(s, _ptrnCOMM)) {
         count++;
-        return (res);
+        return (NULL);
     } else {
         ss.clear();
         ss.str(std::string());
