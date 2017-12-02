@@ -1,5 +1,6 @@
 #include "AbstractVM.hpp"
 #include "AVMException.hpp"
+#include <memory>
 
 AbstractVM::AbstractVM() {
     _types = {
@@ -26,7 +27,7 @@ AbstractVM::AbstractVM() {
 }
 
 AbstractVM::~AbstractVM() {
-    exit();
+    this->exit();
 }
 
 AbstractVM::AbstractVM(const AbstractVM &avm) {
@@ -58,6 +59,9 @@ void AbstractVM::pop() {
 }
 
 void AbstractVM::dump() {
+    if (_avmStack.size() == 0)
+        throw AVMException("avm: Instruction dump on an empty stack");
+
     AVMStack<const IOperand*>::iterator st = _avmStack.begin();
     AVMStack<const IOperand*>::iterator en = _avmStack.end();
 
@@ -65,7 +69,10 @@ void AbstractVM::dump() {
         std::cout << (*st++)->toString() << std::endl;
 }
 
-bool AbstractVM::assert(std::string &operand, std::string &value) {
+void AbstractVM::assert(std::string &operand, std::string &value) {
+    if (_avmStack.size() == 0)
+        throw AVMException("avm: Instruction assert on an empty stack");
+
     const IOperand *op = OperandsFactory::getFactory().createOperand(_types[operand], value);
     const IOperand *top = *(_avmStack.begin());
 
@@ -77,7 +84,6 @@ bool AbstractVM::assert(std::string &operand, std::string &value) {
         delete (op);
         throw AVMException("avm: An assert instruction is not true");
     }
-    return (false);
 }
 
 void AbstractVM::add() {
@@ -172,6 +178,9 @@ void AbstractVM::exit() {
 }
 
 void AbstractVM::print() {
+    if (_avmStack.size() == 0)
+        throw AVMException("avm: Instruction print on an empty stack");
+
     const IOperand *top = *(_avmStack.begin());
 
     if (top->getType() == eOperandType::INT8) {
@@ -183,17 +192,26 @@ void AbstractVM::print() {
 }
 
 void AbstractVM::clean() {
+    if (_avmStack.size() == 0)
+        throw AVMException("avm: Instruction clean on an empty stack");
+
     while (_avmStack.size())
         this->pop();
 }
 
 void AbstractVM::dup() {
+    if (_avmStack.size() == 0)
+        throw AVMException("avm: Instruction dup on an empty stack");
+
     const IOperand *top = *(_avmStack.begin());
     const IOperand *dup = OperandsFactory::getFactory().createOperand(top->getType(), top->toString());
     _avmStack.push(dup);
 }
 
 void AbstractVM::swap() {
+    if (_avmStack.size() < 2)
+        throw AVMException("avm: The stack is composed less that two values ");
+
     const IOperand *first = *(_avmStack.begin());
     const IOperand *second = *(_avmStack.begin() + 1);
     _avmStack.pop();
@@ -203,14 +221,13 @@ void AbstractVM::swap() {
 }
 
 void AbstractVM::fileRead(char *in) {
-    AVMToken *tok;
     std::ifstream ifs(in);
     std::string buff;
     if (ifs) {
         while(std::getline(ifs, buff)) { 
-            tok = NULL;
             try {
-                if ((tok = AVMLexer::getLexer().lexIt(buff))) {
+                std::unique_ptr<AVMToken> tok(AVMLexer::getLexer().lexIt(buff));
+                if (tok) {
                     if (tok->type == AVMToken::TokenType::PUSH) {
                         push(tok->operand, tok->value);
                     } else if (tok->type == AVMToken::TokenType::ASSERT) {
@@ -233,12 +250,11 @@ void AbstractVM::fileRead(char *in) {
 }
 
 void AbstractVM::consoleRead() {
-    AVMToken *tok;
     std::string buff;
-    while(std::getline(std::cin, buff)) { 
-        tok = NULL;
+    while(std::getline(std::cin, buff)) {
         try {
-            if ((tok = AVMLexer::getLexer().lexIt(buff))) {
+            std::unique_ptr<AVMToken> tok(AVMLexer::getLexer().lexIt(buff));
+            if (tok) {
                 if (tok->type == AVMToken::TokenType::PUSH) {
                     push(tok->operand, tok->value);
                 } else if (tok->type == AVMToken::TokenType::ASSERT) {

@@ -28,6 +28,4 @@ public:
 
 static unsigned long count;
 
-static AVMLexer &getLexer();
-
 #endif

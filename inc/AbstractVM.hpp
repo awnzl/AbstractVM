@@ -19,7 +19,7 @@ class AbstractVM {
     void push(std::string &operand, std::string &value);
     void pop();
     void dump();
-    bool assert(std::string &operand, std::string &value);
+    void assert(std::string &operand, std::string &value);
     void add();
     void sub();
     void mul();

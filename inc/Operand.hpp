@@ -4,6 +4,7 @@
 # include <sstream>
 # include <limits>
 # include <cmath>
+# include <memory>
 # include "OperandsFactory.hpp"
 # include "IOperand.hpp"
 # include "AVMException.hpp"
@@ -68,50 +69,81 @@ template<typename T> class Operand : public IOperand {
     const IOperand *mathIt(eOperandType tp, std::string left, std::string right, char c) const {
         int flg = 1;
         std::stringstream ss;
-        
-        auto l = (tp < 3) ? std::atol(left.c_str()) : std::atof(left.c_str());
-        auto r = (tp < 3) ? std::atol(right.c_str()) : std::atof(right.c_str());
+        auto l = (tp < 3) ? std::strtol(left.c_str(), NULL, 10) : std::strtod(left.c_str(), NULL);
+        auto r = (tp < 3) ? std::strtol(right.c_str(), NULL, 10) : std::strtod(right.c_str(), NULL);
         
         const IOperand *resop = NULL;
 
         switch (c) {
             case '+' : 
                 {
-                    auto add = l + r;
-                    if (checkRange(tp, add, &flg))
+                    bool range;
+                    if (tp < 3) {
+                        long mul = l + r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    } else {
+                        double mul = l + r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    }
+                    if (range)
                         throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
-                    ss << add;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
                 }
                 break;
             case '-' : 
                 {
-                    auto sub = l - r;
-                    if (checkRange(tp, sub, &flg))
+                    bool range;
+                    if (tp < 3) {
+                        long mul = l - r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    } else {
+                        double mul = l - r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    }
+                    if (range)
                         throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
-                    ss << sub;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
                 }
                 break;
             case '*' : 
                 {
-                    auto mul = l * r;
-                    if (checkRange(tp, mul, &flg))
+                    bool range;
+                    if (tp < 3) {
+                        long mul = l * r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    } else {
+                        double mul = l * r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    }
+                    if (range)
                         throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
-                    ss << mul;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
                 }
                 break;
             case '/' : 
                 {
-                    auto div = l / r;
-                    if (checkRange(tp, div, &flg))
+                    bool range;
+                    if (tp < 3) {
+                        long mul = l / r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    } else {
+                        double mul = l / r;
+                        ss << mul;
+                        range = checkRange(tp, mul, &flg);
+                    }
+                    if (range)
                         throw AVMException((flg > 0) ? "Overflow on a value or the result of an operation"
                                                            : "Underflow on a value or the result of an operation");
-                    ss << div;
                     resop = OperandsFactory::getFactory().createOperand(tp, ss.str());
                 }
                 break;
@@ -170,13 +202,11 @@ public:
     const IOperand *operator+(const IOperand &rhs) const { // Sum
             const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString));
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '+');
-            delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(this->_type, rhs.toString()));
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '+');
-            delete (tmp);
         } else
             res = mathIt(this->_type, this->_instanceString, rhs.toString(), '+');
         
@@ -186,13 +216,11 @@ public:
     const IOperand *operator-(const IOperand &rhs) const { // Difference
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString));
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '-');
-            delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(this->_type, rhs.toString()));
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '-');
-            delete (tmp);
         } else
             res = mathIt(this->_type, this->_instanceString, rhs.toString(), '-');
         
@@ -202,13 +230,11 @@ public:
     const IOperand *operator*(const IOperand &rhs) const { // Product
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString));
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '*');
-            delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(this->_type, rhs.toString()));
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '*');
-            delete (tmp);
         } else
             res = mathIt(this->_type, this->_instanceString, rhs.toString(), '*');
         
@@ -221,13 +247,11 @@ public:
         
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString));
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '/');
-            delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(this->_type, rhs.toString()));
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '/');
-            delete (tmp);
         } else
             res = mathIt(this->_type, this->_instanceString, rhs.toString(), '/');
         
@@ -237,16 +261,14 @@ public:
     const IOperand *operator%(const IOperand &rhs) const { // Modulo
         if (rhs.toString() == "0" || rhs.toString() == "0.0")
             throw (AVMException("avm: modulo by zero"));
-        
+
         const IOperand *res = NULL;
         if (this->getPrecision() < rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString);
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(rhs.getType(), this->_instanceString));
             res = mathIt(rhs.getType(), tmp->toString(), rhs.toString(), '%');
-            delete (tmp);
         } else if (this->getPrecision() > rhs.getPrecision()) {
-            const IOperand *tmp = OperandsFactory::getFactory().createOperand(this->_type, rhs.toString());
+            std::unique_ptr<const IOperand> tmp(OperandsFactory::getFactory().createOperand(this->_type, rhs.toString()));
             res = mathIt(this->_type, this->_instanceString, tmp->toString(), '%');
-            delete (tmp);
         } else
             res = mathIt(this->_type, this->_instanceString, rhs.toString(), '%');
 

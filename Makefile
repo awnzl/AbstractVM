@@ -1,7 +1,7 @@
 NAME	= avm
 
 CC		= clang++
-FLG		= #-Wall -Werror -Wextra
+FLG		= -Wall -Werror -Wextra
 
 SRCDIR	= ./src
 INCDIR	= ./inc
@@ -10,14 +10,14 @@ OBJDIR	= ./obj
 SRC		= main.cpp AbstractVM.class.cpp OperandsFactory.class.cpp AVMLexer.class.cpp \
 		  AVMException.class.cpp
 
-ATTR	= -std=c++11 #-g
+ATTR	= -std=c++11
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
-$(NAME) : $(OBJ)
+$(NAME) : obj $(OBJ)
 	$(CC) $(FLG) $(OBJ) $(ATTR) -o $(NAME)
 
-all		: obj $(NAME)
+all		: $(NAME)
 
 obj		:
 	@mkdir -p $(OBJDIR)

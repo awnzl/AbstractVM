@@ -29,6 +29,4 @@ public:
 
 };
 
-static OperandsFactory &getFactory();
-
 #endif
