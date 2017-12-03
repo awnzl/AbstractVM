@@ -3,12 +3,9 @@
 unsigned long AVMLexer::count;
 
 AVMLexer::AVMLexer () {
-    _ptrnINSRT = std::regex("(push|assert) ((int(8|16|32)\\([-]?\\d+\\))|"\
-                            "((float|double)\\([-]?\\d+\\.\\d+\\)))[ |\\t]*(;.*)?|"\
-                            "sub[ |\\t]*(;.*)?|mul[ |\\t]*(;.*)?|div[ |\\t]*(;.*)?|"\
-                            "print[ |\\t]*(;.*)?|exit[ |\\t]*(;.*)?|;;|swap[ |\\t]*(;.*)?|"\
-                            "pop[ |\\t]*(;.*)?|dump[ |\\t]*(;.*)?|add[ |\\t]*(;.*)?|"\
-                            "mod[ |\\t]*(;.*)?|dup[ |\\t]*(;.*)?|clean[ |\\t]*(;.*)?");
+    _ptrnINSRT = std::regex("((push|assert) ((int(8|16|32)\\([-]?\\d+\\))|"\
+                            "((float|double)\\([-]?\\d+\\.\\d+\\)))|"\
+                            "(pop|dump|add|sub|mul|div|mod|print|exit|swap|dup|clean))\\s*(;.*)?|;;");
     _ptrnCOMM = std::regex("[ |\\t]*(;.*)?|(\n+)?");
     _ptrnTP = std::regex("push|pop|dump|assert|add|sub|mul|div|mod|print|exit|;;|swap|dup|clean");
 }
