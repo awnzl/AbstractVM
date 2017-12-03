@@ -3,12 +3,12 @@
 unsigned long AVMLexer::count;
 
 AVMLexer::AVMLexer () {
-    _ptrnINSRT = std::regex("push ((int(8|16|32)\\([-]?\\d+\\))|((float|double)\\([-]?\\d+\\.\\d+\\)))[ |\\t]*(;.*)?|"\
-                            "assert ((int(8|16|32)\\([-]?\\d+\\))|((float|double)\\([-]?\\d+\\.\\d+\\)))[ |\\t]*(;.*)?|"\
-                            "sub[ |\\t]*(;.*)?|mul[ |\\t]*(;.*)?|div[ |\\t]*(;.*)?|mod[ |\\t]*(;.*)?|"\
+    _ptrnINSRT = std::regex("(push|assert) ((int(8|16|32)\\([-]?\\d+\\))|"\
+                            "((float|double)\\([-]?\\d+\\.\\d+\\)))[ |\\t]*(;.*)?|"\
+                            "sub[ |\\t]*(;.*)?|mul[ |\\t]*(;.*)?|div[ |\\t]*(;.*)?|"\
                             "print[ |\\t]*(;.*)?|exit[ |\\t]*(;.*)?|;;|swap[ |\\t]*(;.*)?|"\
                             "pop[ |\\t]*(;.*)?|dump[ |\\t]*(;.*)?|add[ |\\t]*(;.*)?|"\
-                            "dup[ |\\t]*(;.*)?|clean[ |\\t]*(;.*)?");
+                            "mod[ |\\t]*(;.*)?|dup[ |\\t]*(;.*)?|clean[ |\\t]*(;.*)?");
     _ptrnCOMM = std::regex("[ |\\t]*(;.*)?|(\n+)?");
     _ptrnTP = std::regex("push|pop|dump|assert|add|sub|mul|div|mod|print|exit|;;|swap|dup|clean");
 }
